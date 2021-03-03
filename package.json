@@ -1,0 +1,23 @@
+{
+  "name": "trello-app-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dizmay/trello-app-back.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dizmay/trello-app-back/issues"
+  },
+  "homepage": "https://github.com/dizmay/trello-app-back#readme",
+  "devDependencies": {
+    "express": "^4.17.1"
+  }
+}
