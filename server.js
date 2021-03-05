@@ -1,14 +1,38 @@
-const express = require('express');
-const path = require('path');
+require('dotenv').config();
+
+const express = require("express");
+require('express-async-errors');
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
 const app = express();
-const port = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080;
 
-app.use(express.static(path.join(__dirname, 'build')));
+const { errorHandlerMiddleware } = require('./api/middleware/errorHandlerMiddleware');
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+const corsOptions = {
+  origin: "http://localhost:3000"
+};
+
+app.use(cors(corsOptions));
+
+app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+const db = require("./api/models");
+db.sequelize.sync({ force: false }).then(() => {
+  console.log('Done');
 });
 
-app.listen(port, () => {
-    console.log(`Server started on port ${port}`);
+app.get("/", (req, res) => {
+  res.json({ message: "Hello world!" });
+});
+
+
+require("./api/routes/users.routes")(app);
+app.use(errorHandlerMiddleware);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
 });
