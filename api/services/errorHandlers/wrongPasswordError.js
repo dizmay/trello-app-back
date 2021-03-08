@@ -2,7 +2,7 @@ const appError = require('./appError');
 
 class wrongPasswordError extends appError {
   constructor(message) {
-    super(message || 'Wrong password', 403);
+    super(message || 'Wrong password!', 403);
   }
 }
 

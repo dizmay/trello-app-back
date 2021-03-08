@@ -4,7 +4,7 @@ class appError extends Error {
     Error.captureStackTrace(this, this.constructor);
 
     this.name = this.constructor.name;
-    this.message = message || 'Something went wrong';
+    this.message = message || 'Something went wrong!';
     this.status = status || 500;
   }
 }

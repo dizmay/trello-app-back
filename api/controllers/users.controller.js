@@ -1,13 +1,13 @@
 const db = require("../models");
 const { hashHelpers, jwtHelpers } = require('../helpers');
 const errors = require('../services/errorHandlers/index');
-const Users = db.users;
 
 const signup = async (req, res) => {
 
-    const userExists = await db.users.findOne({ where: { email: req.body.email } });
+    const emailExists = await db.users.findOne({ where: { email: req.body.email } });
+    const usernameExists = await db.users.findOne({ where: { username: req.body.username } });
 
-    if(userExists) {
+    if(emailExists || usernameExists) {
         throw new errors.userAlreadyExistsError();
     }
 
@@ -21,9 +21,9 @@ const signup = async (req, res) => {
         password: hashedPassword,
     }
 
-    Users.create(user, { transaction })
+    db.users.create(user, { transaction })
         .then(data => {
-            res.send(data);
+            res.send({ message: "You've been successfully signed up!" });
             transaction.commit();
         })
         .catch(err => {
@@ -38,14 +38,19 @@ const signin = async (req, res) => {
     const password = req.body.password;
 
     if(!user) {
-        throw new errors.notFoundError('User not found');
+        throw new errors.notFoundError('User not found!');
     }
 
     if(password && !hashHelpers.validPassword(password, user.password)) {
         throw new errors.wrongPasswordError();
     } else {
-        const responce = jwtHelpers.generateToken({ email: req.body.email, username: req.body.username });
-        res.status(200).send(responce)
+        const token = jwtHelpers.generateToken({ email: req.body.email, username: user.username });
+        const message = "You've been successfully signed in!";
+        const response = {
+            token,
+            message,
+        }
+        res.status(200).send(response)
     }
 
 
