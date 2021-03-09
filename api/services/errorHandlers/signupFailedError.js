@@ -1,9 +1,9 @@
-const appError = require('./appError');
+const AppError = require('./AppError');
 
-class signupFailedError extends appError {
+class SignupFailedError extends AppError {
   constructor(message) {
-    super(message || 'Registration failed!', 500);
+    super(message || 'Registration failed! Internal server error!', 500);
   }
 }
 
-module.exports = signupFailedError;
+module.exports = SignupFailedError;

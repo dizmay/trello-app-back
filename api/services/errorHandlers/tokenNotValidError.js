@@ -1,9 +1,9 @@
-const appError = require('./appError');
+const AppError = require('./AppError');
 
-class tokenNotValidError extends appError {
+class TokenNotValidError extends AppError {
   constructor(message) {
     super(message || 'Token not valid.', 401);
   }
 }
 
-module.exports = tokenNotValidError;
+module.exports = TokenNotValidError;

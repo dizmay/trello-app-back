@@ -1,9 +1,9 @@
-const appError = require('./appError');
+const AppError = require('./AppError');
 
-class userAlreadyExistsError extends appError {
+class UserAlreadyExistsError extends AppError {
   constructor(message) {
     super(message || 'User already exists!', 400);
   }
 }
 
-module.exports = userAlreadyExistsError;
+module.exports = UserAlreadyExistsError;

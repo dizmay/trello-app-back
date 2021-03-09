@@ -1,9 +1,9 @@
-const appError = require('./appError');
+const AppError = require('./AppError');
 
-class wrongPasswordError extends appError {
+class WrongPasswordError extends AppError {
   constructor(message) {
     super(message || 'Wrong password!', 403);
   }
 }
 
-module.exports = wrongPasswordError;
+module.exports = WrongPasswordError;

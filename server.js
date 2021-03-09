@@ -4,6 +4,8 @@ const express = require("express");
 require('express-async-errors');
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { auth } = require('./api/routes');
+const { connectToDB } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -20,17 +22,13 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const db = require("./api/models");
-db.sequelize.sync({ force: false }).then(() => {
-  console.log('Done');
-});
+connectToDB();
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello world!" });
 });
 
-
-require("./api/routes/users.routes")(app);
+app.use('/api', auth);
 app.use(errorHandlerMiddleware);
 
 app.listen(PORT, () => {
