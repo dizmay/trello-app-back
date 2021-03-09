@@ -44,12 +44,7 @@ const signin = async (req, res) => {
     if(password && !hashHelpers.validPassword(password, user.password)) {
         throw new errors.wrongPasswordError();
     } else {
-        const token = jwtHelpers.generateToken({ email: req.body.email, username: user.username });
-        const message = "You've been successfully signed in!";
-        const response = {
-            token,
-            message,
-        }
+        const response = jwtHelpers.generateToken({ email: req.body.email, username: user.username });
         res.status(200).send(response)
     }
 
