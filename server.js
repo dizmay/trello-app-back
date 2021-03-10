@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { auth } = require('./api/routes');
 const { connectToDB } = require('./database');
+const db = require('./api/models');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -31,3 +32,10 @@ app.use(errorHandlerMiddleware);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
+process.on('SIGINT', () => {
+  console.log(1);
+  db.sequelize.connectionManager.close();
+  app.close();
+});
+
