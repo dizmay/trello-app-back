@@ -19,9 +19,9 @@ const signUp = async ({ username, email, password }) => {
       password: hashedPassword,
   }
 
-  const token = jwtHelpers.generateToken({ email, username })
   try {
     await db.users.create(user, { transaction });
+    const token = jwtHelpers.generateToken({ email, username })
     await transaction.commit();
     return token;
   }
