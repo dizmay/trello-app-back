@@ -23,14 +23,14 @@ const signupValidate = (username, email, password) => {
   try {
     Joi.attempt(username, usernameSchema);
   }
-  catch(error) {
+  catch (error) {
     errors.username = error.message.replace('"value"', 'Username');
   }
 
   try {
     Joi.attempt(email, emailSchema);
   }
-  catch(error) {
+  catch (error) {
     console.log(error);
     errors.email = error.message.replace('"value"', 'Email');
   }
@@ -38,7 +38,7 @@ const signupValidate = (username, email, password) => {
   try {
     Joi.attempt(password, passwordSchema);
   }
-  catch(error) {
+  catch (error) {
     console.log(error);
     errors.password = error.message.replace('"value"', 'Password');
   }
@@ -53,7 +53,7 @@ const signinValidate = (email, password) => {
   try {
     Joi.attempt(email, emailSchema);
   }
-  catch(error) {
+  catch (error) {
     console.log(error);
     errors.email = error.message.replace('"value"', 'Email');
   }
@@ -61,7 +61,7 @@ const signinValidate = (email, password) => {
   try {
     Joi.attempt(password, passwordSchema);
   }
-  catch(error) {
+  catch (error) {
     console.log(error);
     errors.password = error.message.replace('"value"', 'Password');
   }

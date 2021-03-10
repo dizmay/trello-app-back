@@ -6,7 +6,7 @@ const signUp = async (req, res) => {
   const { username, email, password } = req.body;
   const errors = signupValidate(username, email, password);
 
-  if(!isEmpty(errors)) {
+  if (!isEmpty(errors)) {
     return res.status(400).json(errors);
   }
 
@@ -18,7 +18,7 @@ const signIn = async (req, res) => {
   const { email, password } = req.body;
   const errors = signinValidate(email, password);
 
-  if(!isEmpty(errors)) {
+  if (!isEmpty(errors)) {
     return res.status(400).json(errors);
   }
 
