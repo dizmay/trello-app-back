@@ -1,6 +1,6 @@
 const db = require('../models');
 const { hashHelpers, jwtHelpers } = require('../helpers');
-const errors = require('../services/errorHandlers/index');
+const errors = require('./errorHandlers/index');
 
 const signUp = async ({ username, email, password }) => {
 
