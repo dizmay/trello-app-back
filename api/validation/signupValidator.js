@@ -31,7 +31,6 @@ const signupValidate = (username, email, password) => {
     Joi.attempt(email, emailSchema);
   }
   catch (error) {
-    console.log(error);
     errors.email = error.message.replace('"value"', 'Email');
   }
 
@@ -39,7 +38,6 @@ const signupValidate = (username, email, password) => {
     Joi.attempt(password, passwordSchema);
   }
   catch (error) {
-    console.log(error);
     errors.password = error.message.replace('"value"', 'Password');
   }
 
@@ -54,7 +52,6 @@ const signinValidate = (email, password) => {
     Joi.attempt(email, emailSchema);
   }
   catch (error) {
-    console.log(error);
     errors.email = error.message.replace('"value"', 'Email');
   }
 
@@ -62,7 +59,6 @@ const signinValidate = (email, password) => {
     Joi.attempt(password, passwordSchema);
   }
   catch (error) {
-    console.log(error);
     errors.password = error.message.replace('"value"', 'Password');
   }
 

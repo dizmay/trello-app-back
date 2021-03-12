@@ -7,6 +7,14 @@ const generateToken = ({ id, email, username }) => {
   return { token };
 };
 
+const getTokenFromHeaders = (headers) => {
+  const token = headers.authorization.split(' ')[1];
+  console.log(token);
+  const decoded = jwt.decode(token);
+  return decoded;
+}
+
 module.exports = {
   generateToken,
+  getTokenFromHeaders,
 };

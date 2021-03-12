@@ -4,9 +4,9 @@ const errors = require('./errorHandlers/index');
 
 const signUp = async ({ username, email, password }) => {
 
-  const emailExists = await db.users.findOne({ where: { email: email } });
+  const userExists = await db.users.findOne({ where: { email: email } });
 
-  if (emailExists) {
+  if (userExists) {
     throw new errors.UserAlreadyExistsError();
   }
 
@@ -21,7 +21,7 @@ const signUp = async ({ username, email, password }) => {
 
   try {
     await db.users.create(user, { transaction });
-    const token = jwtHelpers.generateToken({ email, username })
+    const token = jwtHelpers.generateToken({ id: userExists.id, email, username })
     await transaction.commit();
     return token;
   }
@@ -29,19 +29,28 @@ const signUp = async ({ username, email, password }) => {
     transaction.rollback();
     throw new errors.SignupFailedError();
   }
-  // db.users.create(user, { transaction })
-  //   .then(data => {
-  //     res.send(token);
-  //     transaction.commit();
-  //   })
-  //   .catch(err => {
-  //     transaction.rollback();
-  //     throw new errors.SignupFailedError();
-  //   })
 }
 
 const signIn = async ({ email, password }) => {
   const user = await db.users.findOne({ where: { email: email } });
+
+
+  // try {
+  //   const test = await db.users.findByPk(user.id, {
+  //     attributes: ['username'],
+  //     include: [
+  //       {
+  //         model: db.boards,
+  //         attributes: ['title']
+  //       }
+  //     ]
+  //   })
+  //   console.log(test.boards.map(el => el.dataValues.title));
+  // }
+  // catch(e) {
+  //   console.log(e);
+  // }
+
 
   if (!user) {
     throw new errors.NotFoundError('User not found!');
@@ -53,7 +62,7 @@ const signIn = async ({ email, password }) => {
     throw new errors.WrongPasswordError();
   }
 
-  return jwtHelpers.generateToken({ email: email, username: user.username });
+  return jwtHelpers.generateToken({ id: user.id, email, username: user.username });
 }
 
 module.exports = {

@@ -4,6 +4,7 @@ const UserAlreadyExistsError = require('./UserAlreadyExistsError');
 const SignupFailedError = require('./SignupFailedError');
 const UnauthorizedError = require('./UnauthorizedError');
 const TokenNotValidError = require('./TokenNotValidError');
+const BoardCreationError = require('./BoardCreationError');
 
 module.exports = {
   NotFoundError,
@@ -12,4 +13,5 @@ module.exports = {
   SignupFailedError,
   UnauthorizedError,
   TokenNotValidError,
+  BoardCreationError,
 }
