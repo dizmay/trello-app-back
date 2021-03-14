@@ -20,8 +20,8 @@ const signUp = async ({ username, email, password }) => {
   }
 
   try {
-    await db.users.create(user, { transaction });
-    const token = jwtHelpers.generateToken({ id: userExists.id, email, username })
+    const newUser = await db.users.create(user, { transaction });
+    const token = jwtHelpers.generateToken({ id: newUser.dataValues.id, email, username });
     await transaction.commit();
     return token;
   }
@@ -33,24 +33,6 @@ const signUp = async ({ username, email, password }) => {
 
 const signIn = async ({ email, password }) => {
   const user = await db.users.findOne({ where: { email: email } });
-
-
-  // try {
-  //   const test = await db.users.findByPk(user.id, {
-  //     attributes: ['username'],
-  //     include: [
-  //       {
-  //         model: db.boards,
-  //         attributes: ['title']
-  //       }
-  //     ]
-  //   })
-  //   console.log(test.boards.map(el => el.dataValues.title));
-  // }
-  // catch(e) {
-  //   console.log(e);
-  // }
-
 
   if (!user) {
     throw new errors.NotFoundError('User not found!');

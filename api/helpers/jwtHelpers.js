@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const errors = require('../services/errorHandlers');
 
 const generateToken = ({ id, email, username }) => {
   const token = jwt.sign({ id, email, username }, process.env.SECRET, {
@@ -8,10 +9,14 @@ const generateToken = ({ id, email, username }) => {
 };
 
 const getTokenFromHeaders = (headers) => {
-  const token = headers.authorization.split(' ')[1];
-  console.log(token);
-  const decoded = jwt.decode(token);
-  return decoded;
+  try {
+    const token = headers.authorization.split(' ')[1];
+    const decoded = jwt.decode(token);
+    return decoded;
+  }
+  catch (error) {
+    throw new errors.TokenNotValidError();
+  }
 }
 
 module.exports = {

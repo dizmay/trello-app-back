@@ -33,12 +33,13 @@ const getUserBoards = async (headers) => {
     include: [
       {
         model: db.boards,
-        attributes: ['title'],
+        attributes: ['id', 'title'],
       }
     ]
   })
 
-  const response = userBoards.boards.map(e => e.dataValues.title)
+  const test = userBoards.boards.map(e => e.dataValues);
+  const response = test.map(({ usersBoards, ...rest }) => rest); // removing unnecessary field ([{ id, title, usersBoards }]) => [{ id, title }]
   return response;
 }
 

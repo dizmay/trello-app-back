@@ -38,13 +38,13 @@ const signupValidate = (username, email, password) => {
     Joi.attempt(password, passwordSchema);
   }
   catch (error) {
-    errors.password = error.message.replace('"value"', 'Password');
+    errors.password = 'Password must be at least 6 characters long and have at least one uppercase letter.';
   }
 
   return errors;
 }
 
-const signinValidate = (email, password) => {
+const signinValidate = (email) => {
 
   let errors = {};
 
@@ -55,12 +55,12 @@ const signinValidate = (email, password) => {
     errors.email = error.message.replace('"value"', 'Email');
   }
 
-  try {
-    Joi.attempt(password, passwordSchema);
-  }
-  catch (error) {
-    errors.password = error.message.replace('"value"', 'Password');
-  }
+  // try {
+  //   Joi.attempt(password, passwordSchema);
+  // }
+  // catch (error) {
+  //   errors.password = error.message.replace('"value"', 'Password');
+  // }
 
   return errors;
 }

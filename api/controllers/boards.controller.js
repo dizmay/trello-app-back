@@ -15,7 +15,7 @@ const createBoard = async (req, res) => {
 }
 
 const getBoards = async (req, res) => {
-  const response = await boardService.getUserBoards(req.headers)
+  const response = await boardService.getUserBoards(req.headers);
   res.status(200).send(response);
 }
 
