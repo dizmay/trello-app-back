@@ -4,7 +4,7 @@ const express = require("express");
 require('express-async-errors');
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { auth } = require('./api/routes');
+const { auth, boards } = require('./api/routes');
 const { connectToDB } = require('./database');
 const db = require('./api/models');
 
@@ -27,6 +27,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api', auth);
+app.use('/api/boards', boards);
 app.use(errorHandlerMiddleware);
 
 app.listen(PORT, () => {
@@ -34,7 +35,6 @@ app.listen(PORT, () => {
 });
 
 process.on('SIGINT', () => {
-  console.log(1);
   db.sequelize.connectionManager.close();
   app.close();
 });

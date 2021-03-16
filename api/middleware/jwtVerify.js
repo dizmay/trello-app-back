@@ -7,7 +7,8 @@ const jwtVerify = (req, res, next) => {
       throw new unauthorizedError();
     }
 
-  const decoded = jwt.verify(req.headers.Authorization, process.env.SECRET);
+  const token = req.headers.Authorization.split(' ')[1];
+  const decoded = jwt.verify(token, process.env.SECRET);
   next()
   }
   catch(error) {
