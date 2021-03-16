@@ -4,7 +4,7 @@ const express = require("express");
 require('express-async-errors');
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { auth, boards } = require('./api/routes');
+const { auth, boards, usersBoards } = require('./api/routes');
 const { connectToDB } = require('./database');
 const db = require('./api/models');
 
@@ -28,6 +28,7 @@ app.get("/", (req, res) => {
 
 app.use('/api', auth);
 app.use('/api/boards', boards);
+app.use('/api/users-boards', usersBoards);
 app.use(errorHandlerMiddleware);
 
 app.listen(PORT, () => {
