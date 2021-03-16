@@ -21,5 +21,16 @@ module.exports = (sequelize, Sequelize) => {
     timestamps: false,
   });
 
+  UsersBoards.associate = models => {
+    UsersBoards.belongsTo(models.users, {
+      foreignKey: 'userId',
+      as: "u"
+    })
+    UsersBoards.belongsTo(models.boards, {
+      foreignKey: 'boardId',
+      as: "b"
+    })
+  }
+
   return UsersBoards;
 };

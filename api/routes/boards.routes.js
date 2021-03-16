@@ -6,4 +6,6 @@ router.post('/create', boards.createBoard);
 
 router.get('/get', boards.getBoards);
 
+router.delete('/delete', boards.deleteBoard);
+
 module.exports = router;

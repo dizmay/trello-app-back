@@ -19,7 +19,14 @@ const getBoards = async (req, res) => {
   res.status(200).send(response);
 }
 
+const deleteBoard = async (req, res) => {
+  const { id } = req.body;
+  const response = await boardService.deleteUserBoard(id);
+  res.status(200).send(response);
+}
+
 module.exports = {
   createBoard,
   getBoards,
+  deleteBoard,
 }
