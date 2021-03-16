@@ -75,13 +75,7 @@ const getUserBoards = async (headers) => {
 
 const deleteUserBoard = async (id) => {
   try {
-    const delBoard = await db.boards.findOne({
-      where: { id }
-    });
-    if (!delBoard) {
-      throw new errors.BoardCreationError('TEST');
-    }
-    await delBoard.destroy();
+    await delBoard.destroy({ where: { id } });
     return true;
   }
   catch (error) {
