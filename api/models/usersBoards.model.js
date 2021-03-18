@@ -16,9 +16,6 @@ module.exports = (sequelize, Sequelize) => {
       key: 'id'
     }
   },
-  },
-  {
-    timestamps: false,
   });
 
   UsersBoards.associate = models => {

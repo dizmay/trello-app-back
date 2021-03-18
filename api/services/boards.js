@@ -27,18 +27,6 @@ const createBoard = async ({ id, userId, title }) => {
 
 const getUserBoards = async (headers) => {
   const user = jwtHelpers.getTokenFromHeaders(headers);
-  // const userBoards = await db.users.findByPk(user.id, {
-  //   include: [
-  //     {
-  //       model: db.boards,
-  //       through: {
-  //         attributes: [],
-  //       }
-  //     }
-  //   ]
-  // });
-  // const response = userBoards.boards.map(e => e.dataValues);
-  // return response;
 
   try {
     const userBoards = await db.usersBoards.findAll({
