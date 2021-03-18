@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
         key: 'id',
       }
     },
-    invId: {
+    id: {
       type: Sequelize.INTEGER,
       allowNull: false,
       autoIncrement: true,

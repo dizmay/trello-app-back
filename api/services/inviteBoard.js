@@ -1,10 +1,16 @@
 const db = require('../models');
 const { jwtHelpers, dbHelpers } = require('../helpers');
 const errors = require('./errorHandlers');
+const { isNull } = require('lodash');
 
 const inviteUserToBoard = async (username, boardId, userId) => {
   try {
     const user = await db.users.findOne({ where: { username } });
+    
+    if (isNull(user)) {
+      throw new errors.NotFoundError('User not found!');
+    }
+
     const inviteUserBoard = {
       reqUserId: userId,
       resUserId: user.id,
@@ -14,7 +20,7 @@ const inviteUserToBoard = async (username, boardId, userId) => {
     return res;
   }
   catch (error) {
-    throw new errors.BoardInvitationError(error);
+    throw new errors.BoardInvitationError(error.message);
   }
 }
 
@@ -25,7 +31,7 @@ const getUserNotifications = async (headers) => {
       where: { resUserId: user.id },
       raw: true,
       plain: true,
-      attributes: [[db.sequelize.literal('json_agg(json_build_object(\'username\', requser.username, \'title\', b.title, \'invId\', "inviteBoard"."invId"))'), 'notifications']],
+      attributes: [[db.sequelize.literal('json_agg(json_build_object(\'username\', requser.username, \'title\', b.title, \'invId\', "inviteBoard"."id"))'), 'notifications']],
       include: [
         {
           model: db.users,
@@ -50,18 +56,16 @@ const getUserNotifications = async (headers) => {
 }
 
 const invitationReply = async (invId, isAccepted) => {
-  console.log(isAccepted, invId);
   try {
     if (isAccepted) {
-      const invite = await db.inviteBoard.findOne({ where: { invId } });
-      console.log(invite);
+      const invite = await db.inviteBoard.findOne({ where: { id: invId } });
       const usersBoards = { userId: invite.resUserId, boardId: invite.boardId };
       const response = await db.usersBoards.create(usersBoards);
-      await db.inviteBoard.destroy({ where: { invId } });
+      await db.inviteBoard.destroy({ where: { id: invId } });
       return response;
     }
     else {
-      await db.inviteBoard.destroy({ where: { invId } });
+      await db.inviteBoard.destroy({ where: { id: invId } });
       return true;
     }
   }
