@@ -27,18 +27,6 @@ const createBoard = async ({ id, userId, title }) => {
 
 const getUserBoards = async (headers) => {
   const user = jwtHelpers.getTokenFromHeaders(headers);
-  // const userBoards = await db.users.findByPk(user.id, {
-  //   include: [
-  //     {
-  //       model: db.boards,
-  //       through: {
-  //         attributes: [],
-  //       }
-  //     }
-  //   ]
-  // });
-  // const response = userBoards.boards.map(e => e.dataValues);
-  // return response;
 
   try {
     const userBoards = await db.usersBoards.findAll({
@@ -65,7 +53,7 @@ const getUserBoards = async (headers) => {
         }
       ],
       group: ['u.id'],
-    }).then(res => res.boards);
+    }).then(res => res.boards).catch(err => []);
     return userBoards;
   }
   catch (error) {
@@ -75,11 +63,11 @@ const getUserBoards = async (headers) => {
 
 const deleteUserBoard = async (id) => {
   try {
-    await delBoard.destroy({ where: { id } });
+    await db.boards.destroy({ where: { id } });
     return true;
   }
   catch (error) {
-    console.log(error);
+    throw new errors.BoardDeletionError();
   }
 }
 

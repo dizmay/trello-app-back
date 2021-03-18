@@ -26,6 +26,14 @@ module.exports = (sequelize, Sequelize) => {
       through: 'usersBoards',
       foreignKey: 'userId',
     });
+    Users.hasMany(models.inviteBoard, {
+      as: 'resuser',
+      foreignKey: 'resUserId',
+    })
+    Users.hasMany(models.inviteBoard, {
+      as: 'requser',
+      foreignKey: 'reqUserId',
+    })
   };
 
   return Users;

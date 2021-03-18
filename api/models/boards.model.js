@@ -10,16 +10,16 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING(20),
       allowNull: false,
     },
-  },
-    {
-      timestamps: false,
-    });
+  });
 
   Boards.associate = models => {
     Boards.belongsToMany(models.users, {
       through: 'usersBoards',
       foreignKey: 'boardId',
     });
+    Boards.hasMany(models.inviteBoard, {
+      foreignKey: 'boardId',
+    })
   };
 
   return Boards;

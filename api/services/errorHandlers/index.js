@@ -6,6 +6,8 @@ const UnauthorizedError = require('./UnauthorizedError');
 const TokenNotValidError = require('./TokenNotValidError');
 const BoardCreationError = require('./BoardCreationError');
 const GetBoardsError = require('./GetBoardsError');
+const BoardDeletionError = require('./BoardCreationError');
+const BoardInvitationError = require('./BoardInvitationError');
 
 module.exports = {
   NotFoundError,
@@ -16,4 +18,6 @@ module.exports = {
   TokenNotValidError,
   BoardCreationError,
   GetBoardsError,
+  BoardDeletionError,
+  BoardInvitationError,
 }
