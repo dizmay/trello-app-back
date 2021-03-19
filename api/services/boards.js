@@ -67,6 +67,7 @@ const deleteUserBoard = async (id) => {
     return true;
   }
   catch (error) {
+    console.log(error.message);
     throw new errors.BoardDeletionError();
   }
 }
