@@ -1,14 +1,23 @@
 const db = require('../models');
 const { jwtHelpers, dbHelpers } = require('../helpers');
 const errors = require('./errorHandlers');
-const { isNull } = require('lodash');
+const { isNull, isEmpty } = require('lodash');
 
 const inviteUserToBoard = async (username, boardId, userId) => {
   try {
     const user = await db.users.findOne({ where: { username } });
-    
+
     if (isNull(user)) {
       throw new errors.NotFoundError('User not found!');
+    }
+
+    const invites = await db.inviteBoard.findAll({
+      where: { resUserId: user.id, reqUserId: userId, boardId },
+      raw: true,
+    });
+
+    if (!isEmpty(invites)) {
+      throw new errors.BoardInvitationError('You have already invited this user!');
     }
 
     const inviteUserBoard = {
