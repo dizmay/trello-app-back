@@ -8,6 +8,7 @@ const BoardCreationError = require('./BoardCreationError');
 const GetBoardsError = require('./GetBoardsError');
 const BoardDeletionError = require('./BoardCreationError');
 const BoardInvitationError = require('./BoardInvitationError');
+const CreateColumnError = require('./CreateColumnError');
 
 module.exports = {
   NotFoundError,
@@ -20,4 +21,5 @@ module.exports = {
   GetBoardsError,
   BoardDeletionError,
   BoardInvitationError,
+  CreateColumnError,
 }

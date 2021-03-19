@@ -19,6 +19,9 @@ module.exports = (sequelize, Sequelize) => {
     });
     Boards.hasMany(models.inviteBoard, {
       foreignKey: 'boardId',
+    });
+    Boards.hasMany(models.boardColumns, {
+      foreignKey: 'boardId',
     })
   };
 
