@@ -63,6 +63,7 @@ const getUserBoards = async (headers) => {
 
 const deleteUserBoard = async (id) => {
   try {
+    await db.boardColumns.destroy({ where: { boardId: id } });
     await db.boards.destroy({ where: { id } });
     return true;
   }
