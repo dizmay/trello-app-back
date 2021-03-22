@@ -60,6 +60,12 @@ const deleteBoardColumn = async (columnId) => {
 
 const updateBoardColumn = async (columnId, title) => {
   try {
+    const error = await columnTitleValidate(title);
+
+    if (!isEmpty(error)) {
+      throw new errors.UpdateColumnError(error.title)
+    }
+
     const column = await db.boardColumns.findOne({
       where: { id: columnId }
     })
@@ -68,7 +74,7 @@ const updateBoardColumn = async (columnId, title) => {
     return 'Column successfully updated!'
   }
   catch (error) {
-    console.log(error.message);
+    throw new errors.UpdateColumnError(error.message);
   }
 }
 
