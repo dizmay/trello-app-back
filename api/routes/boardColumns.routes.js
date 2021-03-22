@@ -4,10 +4,10 @@ const boardColumns = require('../controllers/boardColumns.controller');
 
 router.post('/create', boardColumns.createColumn);
 
-router.post('/get', boardColumns.getBoardColumns);
+router.post('/', boardColumns.getBoardColumns);
 
-router.delete('/delete', boardColumns.deleteColumn);
+router.delete('/', boardColumns.deleteColumn);
 
-router.put('/update', boardColumns.updateColumn);
+router.put('/', boardColumns.updateColumn);
 
 module.exports = router;
