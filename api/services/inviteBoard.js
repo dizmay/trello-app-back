@@ -26,7 +26,7 @@ const inviteUserToBoard = async (username, boardId, userId) => {
       boardId: boardId,
     }
     const res = await db.inviteBoard.create(inviteUserBoard);
-    return res;
+    return 'You successfully invited user!';
   }
   catch (error) {
     throw new errors.BoardInvitationError(error.message);

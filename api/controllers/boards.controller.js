@@ -3,7 +3,7 @@ const { boardService } = require('../services');
 const { boardTitleValidate } = require('../validation/boardValidator');
 
 const createBoard = async (req, res) => {
-  const title = req.body.title;
+  const { title } = req.body;
   const errors = boardTitleValidate(title);
 
   if (!isEmpty(errors)) {
@@ -20,7 +20,7 @@ const getBoards = async (req, res) => {
 }
 
 const deleteBoard = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.query;
   const response = await boardService.deleteUserBoard(id);
   res.status(200).send(response);
 }
