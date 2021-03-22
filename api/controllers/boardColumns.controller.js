@@ -7,13 +7,13 @@ const createColumn = async (req, res) => {
 }
 
 const getBoardColumns = async (req, res) => {
-  const { boardId } = req.body;
+  const { boardId } = req.query;
   const response = await boardColumnsService.getColumns(boardId);
   res.status(200).send(response);
 }
 
 const deleteColumn = async (req, res) => {
-  const { columnId } = req.body;
+  const { columnId } = req.query;
   const response = await boardColumnsService.deleteBoardColumn(columnId);
   res.status(200).send(response);
 }
