@@ -44,7 +44,7 @@ const getColumns = async (boardId) => {
       ],
       raw: true,
       group: ['"boardColumns".id'],
-    })
+    }).then(res => res.sort((a, b) => a.id - b.id))
 
     if (!boardColumns) {
       return [];

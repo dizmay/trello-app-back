@@ -63,6 +63,8 @@ const getUserBoards = async (headers) => {
 
 const deleteUserBoard = async (id) => {
   try {
+    const columnId = await db.boardColumns.findAll({ where: { boardId: id }, attributes: ['id'], raw: true });
+    columnId.forEach(async item => await db.columnsTasks.destroy({ where: { columnId: item.id } }));
     await db.boardColumns.destroy({ where: { boardId: id } });
     await db.boards.destroy({ where: { id } });
     return true;
