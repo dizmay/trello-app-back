@@ -1,25 +1,10 @@
 const db = require('../models');
 
-const createColumnTask = async (title, description, boardId) => {
+const createColumnTask = async (title, description, columnId) => {
   try {
-    const newTask = { title, description, boardId };
+    const newTask = { title, description, columnId };
     db.columnsTasks.create(newTask);
     return 'Card successfully created!';
-  }
-  catch (error) {
-    console.log(error.message);
-  }
-}
-
-const getColumnTasks = async (boardId) => {
-  try {
-    const tasks = await db.columnsTasks.findAll({
-      where: { boardId },
-      attributes: {
-        exclude: ['boardId']
-      }
-    });
-    return tasks;
   }
   catch (error) {
     console.log(error.message);
@@ -41,7 +26,7 @@ const updateColumnTask = async (id, title, description) => {
     const task = await db.columnsTasks.findOne({ where: { id } });
     task.title = title;
     task.description = description;
-    task.save();
+    await task.save();
     return 'Card successfully updated!';
   }
   catch (error) {
@@ -51,7 +36,6 @@ const updateColumnTask = async (id, title, description) => {
 
 module.exports = {
   createColumnTask,
-  getColumnTasks,
   deleteColumnTask,
   updateColumnTask,
 }

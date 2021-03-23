@@ -4,20 +4,14 @@ const { taskValidate } = require('../validation/columnsTasksValidator');
 const errors = require('../services/errorHandlers');
 
 const createTask = async (req, res) => {
-  const { title, description, boardId } = req.body;
+  const { title, description, columnId } = req.body;
   const error = taskValidate(title, description);
 
   if(!isEmpty(error)) {
     throw new errors.ValidationError(error.title);
   }
 
-  const response = await columnsTasksService.createColumnTask(title, description, boardId);
-  res.status(200).send(response);
-}
-
-const getTasks = async (req, res) => {
-  const { boardId } = req.query;
-  const response = await columnsTasksService.getColumnTasks(boardId);
+  const response = await columnsTasksService.createColumnTask(title, description, columnId);
   res.status(200).send(response);
 }
 
@@ -41,7 +35,6 @@ const updateTask = async (req, res) => {
 
 module.exports = {
   createTask,
-  getTasks,
   deleteTask,
   updateTask,
 }

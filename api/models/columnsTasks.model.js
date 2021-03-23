@@ -4,7 +4,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
       autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
     },
     title: {
       type: Sequelize.STRING(20),
@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING(20),
       allowNull: false,
     },
-    boardId: {
+    columnId: {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
@@ -22,7 +22,8 @@ module.exports = (sequelize, Sequelize) => {
 
   ColumnsTasks.associate = models => {
     ColumnsTasks.belongsTo(models.boardColumns, {
-      foreignKey: 'boardId',
+      as: 'tasks',
+      foreignKey: 'columnId',
     })
   }
 

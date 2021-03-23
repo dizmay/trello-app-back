@@ -4,8 +4,6 @@ const columnsTasks = require('../controllers/columnsTasks.controller');
 
 router.post('/', columnsTasks.createTask);
 
-router.get('/', columnsTasks.getTasks);
-
 router.delete('/', columnsTasks.deleteTask);
 
 router.put('/', columnsTasks.updateTask);

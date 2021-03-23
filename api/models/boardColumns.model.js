@@ -21,6 +21,10 @@ module.exports = (sequelize, Sequelize) => {
       as: 'bc',
       foreignKey: 'boardId',
     })
+    BoardColumns.hasMany(models.columnsTasks, {
+      as: 'tasks',
+      foreignKey: 'columnId',
+    })
   }
 
   return BoardColumns;
