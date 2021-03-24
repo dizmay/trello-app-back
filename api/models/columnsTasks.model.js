@@ -1,31 +1,31 @@
 module.exports = (sequelize, Sequelize) => {
-  const BoardColumns = sequelize.define('boardColumns', {
+  const ColumnsTasks = sequelize.define('columnsTasks', {
     id: {
       type: Sequelize.INTEGER,
       allowNull: false,
       autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
     },
     title: {
       type: Sequelize.STRING(20),
       allowNull: false,
     },
-    boardId: {
+    description: {
+      type: Sequelize.STRING(20),
+      allowNull: false,
+    },
+    columnId: {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
   });
 
-  BoardColumns.associate = models => {
-    BoardColumns.belongsTo(models.boards, {
-      as: 'bc',
-      foreignKey: 'boardId',
-    })
-    BoardColumns.hasMany(models.columnsTasks, {
+  ColumnsTasks.associate = models => {
+    ColumnsTasks.belongsTo(models.boardColumns, {
       as: 'tasks',
       foreignKey: 'columnId',
     })
   }
 
-  return BoardColumns;
+  return ColumnsTasks;
 };
