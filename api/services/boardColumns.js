@@ -2,7 +2,6 @@ const { isEmpty } = require('lodash');
 const db = require('../models');
 const { columnTitleValidate } = require('../validation/boardColumnValidator');
 const errors = require('./errorHandlers');
-const Op = db.Sequelize.Op;
 
 const createNewColumn = async (title, boardId) => {
   try {
@@ -18,9 +17,15 @@ const createNewColumn = async (title, boardId) => {
       throw new errors.NotFoundError('Board not found!')
     }
 
+    const order = await db.boardColumns.findOne({
+      attributes: [db.sequelize.fn('max', db.sequelize.col('order'))],
+      raw: true,
+    });
+
     const newColumn = {
       title,
       boardId,
+      order: order.max + 1000
     };
     await db.boardColumns.create(newColumn);
     return 'Column successfully created!'
@@ -34,7 +39,7 @@ const getColumns = async (boardId) => {
   try {
     const boardColumns = await db.boardColumns.findAll({
       where: { boardId },
-      attributes: ['id', 'title'],
+      attributes: ['id', 'title', 'order'],
       include: [
         {
           model: db.columnsTasks,
@@ -44,7 +49,7 @@ const getColumns = async (boardId) => {
       ],
       raw: true,
       group: ['"boardColumns".id'],
-    }).then(res => res.sort((a, b) => a.id - b.id))
+    }).then(res => res.sort((a, b) => a.order - b.order));
 
     if (!boardColumns) {
       return [];
@@ -89,9 +94,28 @@ const updateBoardColumn = async (columnId, title) => {
   }
 }
 
+const boardColumnDND = async (dragOrder, prevDropOrder, dropOrder, nextDropOrder) => {
+  try {
+    const dragElement = await db.boardColumns.findOne({ where: { order: dragOrder } });
+    if (dragOrder > dropOrder) {
+      dragElement.order = (prevDropOrder + dropOrder) / 2;
+      await dragElement.save();
+    }
+    else {
+      dragElement.order = (dropOrder + nextDropOrder) / 2;
+      await dragElement.save();
+    }
+    return true;
+  }
+  catch (error) {
+    console.log(error.message);
+  }
+}
+
 module.exports = {
   createNewColumn,
   getColumns,
   deleteBoardColumn,
   updateBoardColumn,
+  boardColumnDND,
 }

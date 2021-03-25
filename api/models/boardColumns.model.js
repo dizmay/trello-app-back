@@ -14,6 +14,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    order: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
   });
 
   BoardColumns.associate = models => {
