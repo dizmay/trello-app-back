@@ -25,8 +25,8 @@ const updateColumn = async (req, res) => {
 }
 
 const columnDnD = async (req, res) => {
-  const { dragOrder, prevDropOrder, dropOrder, nextDropOrder } = req.body;
-  const response = await boardColumnsService.boardColumnDND(dragOrder, prevDropOrder, dropOrder, nextDropOrder);
+  const { dragId, dropId, boardId } = req.body;
+  const response = await boardColumnsService.boardColumnDND(dragId, dropId, boardId);
   res.status(200).send(response);
 }
 

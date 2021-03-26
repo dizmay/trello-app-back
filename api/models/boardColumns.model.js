@@ -14,9 +14,11 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
-    order: {
+    prevId: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+    },
+    nextId: {
+      type: Sequelize.INTEGER,
     },
   });
 
