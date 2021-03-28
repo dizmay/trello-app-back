@@ -13,8 +13,8 @@ const getBoardColumns = async (req, res) => {
 }
 
 const deleteColumn = async (req, res) => {
-  const { columnId } = req.query;
-  const response = await boardColumnsService.deleteBoardColumn(columnId);
+  const { columnId, boardId } = req.query;
+  const response = await boardColumnsService.deleteBoardColumn(columnId, boardId);
   res.status(200).send(response);
 }
 

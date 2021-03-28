@@ -1,8 +1,8 @@
-const { isEmpty } = require('lodash');
+const { isEmpty, isNull } = require('lodash');
 const db = require('../models');
 const { columnTitleValidate } = require('../validation/boardColumnValidator');
 const errors = require('./errorHandlers');
-const { columnsDnD } = require('../utils/columnsDnD');
+const { changePositionDnD, dllSort, dllElementRemove } = require('../utils');
 
 const createNewColumn = async (title, boardId) => {
   try {
@@ -18,13 +18,21 @@ const createNewColumn = async (title, boardId) => {
       throw new errors.NotFoundError('Board not found!')
     }
 
-
+    const lastColumn = await db.boardColumns.findOne({ where: { nextId: null } });
 
     const newColumn = {
       title,
       boardId,
+      prevId: isNull(lastColumn) ? null : lastColumn.id,
+      nextId: null,
     };
-    await db.boardColumns.create(newColumn);
+    const createdColumn = await db.boardColumns.create(newColumn);
+
+    if (!isNull(lastColumn)) {
+      lastColumn.nextId = createdColumn.id;
+      await lastColumn.save();
+    }
+
     return 'Column successfully created!'
   }
   catch (error) {
@@ -36,7 +44,7 @@ const getColumns = async (boardId) => {
   try {
     const boardColumns = await db.boardColumns.findAll({
       where: { boardId },
-      attributes: ['id', 'title'],
+      attributes: ['id', 'title', 'prevId', 'nextId'],
       include: [
         {
           model: db.columnsTasks,
@@ -46,7 +54,7 @@ const getColumns = async (boardId) => {
       ],
       raw: true,
       group: ['"boardColumns".id'],
-    })
+    }).then(res => dllSort(res));
 
     if (!boardColumns) {
       return [];
@@ -56,13 +64,19 @@ const getColumns = async (boardId) => {
     return boardColumns;
   }
   catch (error) {
-    console.log(error.message);
+    console.log(error);
   }
 }
 
-const deleteBoardColumn = async (columnId) => {
+const deleteBoardColumn = async (columnId, boardId) => {
   try {
-    await db.columnsTasks.destroy({ where: { columnId } })
+    const boardColumns = await db.boardColumns.findAll({ where: { boardId } });
+    const columns = boardColumns.map(el => el.dataValues);
+    const removalChanges = dllElementRemove(columnId, columns);
+    Promise.all(removalChanges.map(async change => {
+      await db.boardColumns.update({ prevId: change.prevId, nextId: change.nextId }, { where: { id: change.id } });
+    }));
+    await db.columnsTasks.destroy({ where: { columnId } });
     await db.boardColumns.destroy({ where: { id: columnId } });
     return 'Column successfully deleted!'
   }
@@ -94,27 +108,13 @@ const updateBoardColumn = async (columnId, title) => {
 const boardColumnDND = async (dragId, dropId, boardId) => {
   try {
     const boardColumns = await db.boardColumns.findAll({ where: { boardId } });
-    const columns = boardColumns.map(el => el.dataValues);
-    const difference = columnsDnD(dragId, dropId, columns);
-    console.log(difference);
-    // const response = await boardColumns.map(async column => {
-    //   await difference.map(async diff => {
-    //     if (diff.id === column.id) {
-    //       column.prevId = diff.prevId;
-    //       column.nextId = diff.nextId;
-    //     }
-    //     return await diff;
-    //   });
-    //   await column.save();
-    //   console.log(1);
-    //   return await column;
-    // });
-    const response = difference.map(async diff => {
-      console.log(diff.id);
+    const columns = dllSort(boardColumns.map(el => el.dataValues));
+    const difference = changePositionDnD(dragId, dropId, columns);
+    const response = await Promise.all(difference.map(async diff => {
       await db.boardColumns.update({ prevId: diff.prevId, nextId: diff.nextId }, { where: { id: diff.id } });
-    });
-    console.log(response);
-    return await response;
+      return diff;
+    }));
+    return response;
   }
   catch (error) {
     console.log(error.message);
