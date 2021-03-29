@@ -24,9 +24,9 @@ const updateColumn = async (req, res) => {
   res.status(200).send(response);
 }
 
-const columnDnD = async (req, res) => {
+const moveColumn = async (req, res) => {
   const { dragId, dropId, boardId } = req.body;
-  const response = await boardColumnsService.boardColumnDND(dragId, dropId, boardId);
+  const response = await boardColumnsService.changeColumnOrder(dragId, dropId, boardId);
   res.status(200).send(response);
 }
 
@@ -35,5 +35,5 @@ module.exports = {
   getBoardColumns,
   deleteColumn,
   updateColumn,
-  columnDnD,
+  moveColumn,
 }

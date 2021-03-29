@@ -2,7 +2,8 @@ const { isEmpty, isNull } = require('lodash');
 const db = require('../models');
 const { columnTitleValidate } = require('../validation/boardColumnValidator');
 const errors = require('./errorHandlers');
-const { changePositionDnD, dllSort, dllElementRemove } = require('../utils');
+const { changeColumnPosition, sortList, removeListElement } = require('../utils');
+const { Op } = require('sequelize');
 
 const createNewColumn = async (title, boardId) => {
   try {
@@ -18,7 +19,14 @@ const createNewColumn = async (title, boardId) => {
       throw new errors.NotFoundError('Board not found!')
     }
 
-    const lastColumn = await db.boardColumns.findOne({ where: { nextId: null } });
+    const lastColumn = await db.boardColumns.findOne({
+      where: {
+        [Op.and]: [
+          { nextId: null },
+          { boardId },
+        ]
+      }
+    });
 
     const newColumn = {
       title,
@@ -54,7 +62,7 @@ const getColumns = async (boardId) => {
       ],
       raw: true,
       group: ['"boardColumns".id'],
-    }).then(res => dllSort(res));
+    }).then(res => sortList(res));
 
     if (!boardColumns) {
       return [];
@@ -72,7 +80,7 @@ const deleteBoardColumn = async (columnId, boardId) => {
   try {
     const boardColumns = await db.boardColumns.findAll({ where: { boardId } });
     const columns = boardColumns.map(el => el.dataValues);
-    const removalChanges = dllElementRemove(columnId, columns);
+    const removalChanges = removeListElement(columnId, columns);
     Promise.all(removalChanges.map(async change => {
       await db.boardColumns.update({ prevId: change.prevId, nextId: change.nextId }, { where: { id: change.id } });
     }));
@@ -105,11 +113,11 @@ const updateBoardColumn = async (columnId, title) => {
   }
 }
 
-const boardColumnDND = async (dragId, dropId, boardId) => {
+const changeColumnOrder = async (dragId, dropId, boardId) => {
   try {
     const boardColumns = await db.boardColumns.findAll({ where: { boardId } });
-    const columns = dllSort(boardColumns.map(el => el.dataValues));
-    const difference = changePositionDnD(dragId, dropId, columns);
+    const columns = sortList(boardColumns.map(el => el.dataValues));
+    const difference = changeColumnPosition(dragId, dropId, columns);
     const response = await Promise.all(difference.map(async diff => {
       await db.boardColumns.update({ prevId: diff.prevId, nextId: diff.nextId }, { where: { id: diff.id } });
       return diff;
@@ -126,5 +134,5 @@ module.exports = {
   getColumns,
   deleteBoardColumn,
   updateBoardColumn,
-  boardColumnDND,
+  changeColumnOrder,
 }

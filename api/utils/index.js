@@ -1,12 +1,8 @@
-const { isEmpty, isUndefined } = require("lodash");
+const objIsEmpty = (obj) => obj && Object.keys(obj).length === 0;
 
-function* repeat(x) {
-  while (true) yield x;
-}
+const changeColumnPosition = (dragId, dropId, columns) => {
 
-const changePositionDnD = (dragId, dropId, columns) => {
-
-  let [prevDrag, nextDrag, prevDrop, nextDrop] = repeat({});
+  let [prevDrag, nextDrag, prevDrop, nextDrop] = [{}, {}, {}, {}];
   const drag = columns.find(column => column.id === dragId);
   const drop = columns.find(column => column.id === dropId);
 
@@ -19,11 +15,10 @@ const changePositionDnD = (dragId, dropId, columns) => {
 
   switch (true) {
     case nextDrag.id === drop.id: // From the smallest ID to the larger one if they are close
-      console.log(111);
-      if (!isEmpty(prevDrag)) {
+      if (!objIsEmpty(prevDrag)) {
         prevDrag.nextId = drop.id;
       }
-      if (!isEmpty(nextDrop)) {
+      if (!objIsEmpty(nextDrop)) {
         nextDrop.prevId = drag.id;
       }
       {
@@ -41,11 +36,10 @@ const changePositionDnD = (dragId, dropId, columns) => {
       return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
 
     case prevDrag.id === drop.id: // From bigger ID to smaller if they are close
-      console.log(222);
-      if (!isEmpty(nextDrag)) {
+      if (!objIsEmpty(nextDrag)) {
         nextDrag.prevId = drop.id;
       }
-      if (!isEmpty(prevDrop)) {
+      if (!objIsEmpty(prevDrop)) {
         prevDrop.nextId = drag.id;
       }
       {
@@ -64,12 +58,11 @@ const changePositionDnD = (dragId, dropId, columns) => {
 
 
     case prevDrag.prevId === drop.id: // One element apart and moves from right to left
-      console.log(333);
-      if (!isEmpty(prevDrop)) {
+      if (!objIsEmpty(prevDrop)) {
         prevDrop.nextId = drag.id;
       }
       prevDrag.nextId = drag.nextId;
-      if (!isEmpty(nextDrag)) {
+      if (!objIsEmpty(nextDrag)) {
         nextDrag.prevId = drop.nextId;
       }
       {
@@ -86,12 +79,11 @@ const changePositionDnD = (dragId, dropId, columns) => {
       return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
 
     case nextDrag.nextId === drop.id: // One element apart and moves from left to right
-      console.log(444);
-      if (!isEmpty(prevDrag)) {
+      if (!objIsEmpty(prevDrag)) {
         prevDrag.nextId = drag.nextId;
       }
       nextDrag.prevId = drag.prevId;
-      if (!isEmpty(nextDrop)) {
+      if (!objIsEmpty(nextDrop)) {
         nextDrop.prevId = drag.id;
       }
       {
@@ -108,12 +100,11 @@ const changePositionDnD = (dragId, dropId, columns) => {
       return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
 
     case drag.id !== drop.id: // Many elements in between
-      console.log('test\n');
       if (columns.indexOf(drag) < columns.indexOf(drop)) { // from left side to right
-        if (!isEmpty(prevDrag)) {
+        if (!objIsEmpty(prevDrag)) {
           prevDrag.nextId = drag.nextId;
         }
-        if (!isEmpty(nextDrop)) {
+        if (!objIsEmpty(nextDrop)) {
           nextDrop.prevId = drag.id;
         }
         nextDrag.prevId = drag.prevId;
@@ -127,10 +118,10 @@ const changePositionDnD = (dragId, dropId, columns) => {
         drag.nextId = dropTemp.nextId;
         drop.nextId = dragTemp.id;
       } else { // from right side to left
-        if (!isEmpty(nextDrag)) {
+        if (!objIsEmpty(nextDrag)) {
           nextDrag.prevId = drag.prevId;
         }
-        if (!isEmpty(prevDrop)) {
+        if (!objIsEmpty(prevDrop)) {
           prevDrop.nextId = drag.id;
         }
         prevDrag.nextId = drag.nextId;
@@ -152,13 +143,13 @@ const changePositionDnD = (dragId, dropId, columns) => {
 
 }
 
-const dllSort = (columns) => {
+const sortList = (columns) => {
   const result = [];
-  let [current, next, nextElementId] = repeat(null);
+  let [current, next, nextElementId] = [null, null, null];
   const removeColumn = column => columns.splice(columns.indexOf(column), 1)[0];
   while (columns.length !== 0) {
     current = columns.find(el => el.prevId === nextElementId);
-    if (isUndefined(current)) break;
+    if (current === undefined) break;
     result.push(removeColumn(current));
     next = columns.find(el => el.id === current.nextId);
     if (next) nextElementId = next.prevId;
@@ -166,24 +157,24 @@ const dllSort = (columns) => {
   return result;
 }
 
-const dllElementRemove = (elemId, arr) => {
-  let [prevElem, nextElem] = repeat({});
+const removeListElement = (elemId, arr) => {
+  let [prevElem, nextElem] = [{}, {}];
   const current = arr.find(e => e.id === +elemId);
   arr.forEach(item => {
     if (item.id === current.prevId) prevElem = item;
     if (item.id === current.nextId) nextElem = item;
   });
-  if (!isEmpty(prevElem)) {
+  if (!objIsEmpty(prevElem)) {
     prevElem.nextId = current.nextId;
   }
-  if (!isEmpty(nextElem)) {
+  if (!objIsEmpty(nextElem)) {
     nextElem.prevId = current.prevId;
   }
   return [prevElem, nextElem];
 }
 
 module.exports = {
-  changePositionDnD,
-  dllSort,
-  dllElementRemove,
+  changeColumnPosition,
+  sortList,
+  removeListElement,
 }
