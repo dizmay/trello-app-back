@@ -1,14 +1,14 @@
-const { isEmpty } = require('lodash');
 const db = require('../models');
 const { columnTitleValidate } = require('../validation/boardColumnValidator');
 const errors = require('./errorHandlers');
-const Op = db.Sequelize.Op;
+const { changeColumnPosition, sortList, removeListElement, objIsEmpty, isNull } = require('../utils');
+const { Op } = require('sequelize');
 
 const createNewColumn = async (title, boardId) => {
   try {
     const error = await columnTitleValidate(title);
 
-    if (!isEmpty(error)) {
+    if (!objIsEmpty(error)) {
       throw new errors.CreateColumnError(error.title)
     }
 
@@ -18,11 +18,28 @@ const createNewColumn = async (title, boardId) => {
       throw new errors.NotFoundError('Board not found!')
     }
 
+    const lastColumn = await db.boardColumns.findOne({
+      where: {
+        [Op.and]: [
+          { nextId: null },
+          { boardId },
+        ]
+      }
+    });
+
     const newColumn = {
       title,
       boardId,
+      prevId: isNull(lastColumn) ? null : lastColumn.id,
+      nextId: null,
     };
-    await db.boardColumns.create(newColumn);
+    const createdColumn = await db.boardColumns.create(newColumn);
+
+    if (!isNull(lastColumn)) {
+      lastColumn.nextId = createdColumn.id;
+      await lastColumn.save();
+    }
+
     return 'Column successfully created!'
   }
   catch (error) {
@@ -34,7 +51,7 @@ const getColumns = async (boardId) => {
   try {
     const boardColumns = await db.boardColumns.findAll({
       where: { boardId },
-      attributes: ['id', 'title'],
+      attributes: ['id', 'title', 'prevId', 'nextId'],
       include: [
         {
           model: db.columnsTasks,
@@ -44,7 +61,7 @@ const getColumns = async (boardId) => {
       ],
       raw: true,
       group: ['"boardColumns".id'],
-    }).then(res => res.sort((a, b) => a.id - b.id))
+    }).then(res => sortList(res));
 
     if (!boardColumns) {
       return [];
@@ -54,13 +71,19 @@ const getColumns = async (boardId) => {
     return boardColumns;
   }
   catch (error) {
-    console.log(error.message);
+    console.log(error);
   }
 }
 
-const deleteBoardColumn = async (columnId) => {
+const deleteBoardColumn = async (columnId, boardId) => {
   try {
-    await db.columnsTasks.destroy({ where: { columnId } })
+    const boardColumns = await db.boardColumns.findAll({ where: { boardId } });
+    const columns = boardColumns.map(el => el.dataValues);
+    const removalChanges = removeListElement(columnId, columns);
+    Promise.all(removalChanges.map(async change => {
+      await db.boardColumns.update({ prevId: change.prevId, nextId: change.nextId }, { where: { id: change.id } });
+    }));
+    await db.columnsTasks.destroy({ where: { columnId } });
     await db.boardColumns.destroy({ where: { id: columnId } });
     return 'Column successfully deleted!'
   }
@@ -73,7 +96,7 @@ const updateBoardColumn = async (columnId, title) => {
   try {
     const error = await columnTitleValidate(title);
 
-    if (!isEmpty(error)) {
+    if (!objIsEmpty(error)) {
       throw new errors.UpdateColumnError(error.title)
     }
 
@@ -89,9 +112,26 @@ const updateBoardColumn = async (columnId, title) => {
   }
 }
 
+const changeColumnOrder = async (dragId, dropId, boardId) => {
+  try {
+    const boardColumns = await db.boardColumns.findAll({ where: { boardId } });
+    const columns = sortList(boardColumns.map(el => el.dataValues));
+    const difference = changeColumnPosition(dragId, dropId, columns);
+    const response = await Promise.all(difference.map(async diff => {
+      await db.boardColumns.update({ prevId: diff.prevId, nextId: diff.nextId }, { where: { id: diff.id } });
+      return diff;
+    }));
+    return response;
+  }
+  catch (error) {
+    console.log(error.message);
+  }
+}
+
 module.exports = {
   createNewColumn,
   getColumns,
   deleteBoardColumn,
   updateBoardColumn,
+  changeColumnOrder,
 }

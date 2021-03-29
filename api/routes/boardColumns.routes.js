@@ -10,4 +10,6 @@ router.delete('/', boardColumns.deleteColumn);
 
 router.put('/', boardColumns.updateColumn);
 
+router.put('/move-column', boardColumns.moveColumn);
+
 module.exports = router;

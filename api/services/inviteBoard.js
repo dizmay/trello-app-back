@@ -1,7 +1,7 @@
 const db = require('../models');
-const { jwtHelpers, dbHelpers } = require('../helpers');
+const { jwtHelpers } = require('../helpers');
 const errors = require('./errorHandlers');
-const { isNull, isEmpty } = require('lodash');
+const { objIsEmpty, isNull } = require('../utils');
 
 const inviteUserToBoard = async (username, boardId, userId) => {
   try {
@@ -16,7 +16,7 @@ const inviteUserToBoard = async (username, boardId, userId) => {
       raw: true,
     });
 
-    if (!isEmpty(invites)) {
+    if (!objIsEmpty(invites)) {
       throw new errors.BoardInvitationError('You have already invited this user!');
     }
 

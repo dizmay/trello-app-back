@@ -13,8 +13,8 @@ const getBoardColumns = async (req, res) => {
 }
 
 const deleteColumn = async (req, res) => {
-  const { columnId } = req.query;
-  const response = await boardColumnsService.deleteBoardColumn(columnId);
+  const { columnId, boardId } = req.query;
+  const response = await boardColumnsService.deleteBoardColumn(columnId, boardId);
   res.status(200).send(response);
 }
 
@@ -24,9 +24,16 @@ const updateColumn = async (req, res) => {
   res.status(200).send(response);
 }
 
+const moveColumn = async (req, res) => {
+  const { dragId, dropId, boardId } = req.body;
+  const response = await boardColumnsService.changeColumnOrder(dragId, dropId, boardId);
+  res.status(200).send(response);
+}
+
 module.exports = {
   createColumn,
   getBoardColumns,
   deleteColumn,
   updateColumn,
+  moveColumn,
 }
