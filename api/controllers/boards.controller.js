@@ -1,4 +1,4 @@
-const { isEmpty } = require('lodash');
+const { objIsEmpty } = require('../utils')
 const { boardService } = require('../services');
 const { boardTitleValidate } = require('../validation/boardValidator');
 
@@ -6,7 +6,7 @@ const createBoard = async (req, res) => {
   const { title } = req.body;
   const errors = boardTitleValidate(title);
 
-  if (!isEmpty(errors)) {
+  if (!objIsEmpty(errors)) {
     return res.status(400).json(errors);
   }
 

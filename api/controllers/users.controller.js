@@ -1,12 +1,12 @@
 const { authService } = require('../services');
 const { signupValidate, signinValidate } = require('../validation/signupValidator');
-const { isEmpty } = require('lodash');
+const { objIsEmpty } = require('../utils');
 
 const signUp = async (req, res) => {
   const { username, email, password } = req.body;
   const errors = signupValidate(username, email, password);
 
-  if (!isEmpty(errors)) {
+  if (!objIsEmpty(errors)) {
     return res.status(400).json(errors);
   }
 
@@ -18,7 +18,7 @@ const signIn = async (req, res) => {
   const { email, password } = req.body;
   const errors = signinValidate(email);
 
-  if (!isEmpty(errors)) {
+  if (!objIsEmpty(errors)) {
     return res.status(400).json(errors);
   }
 

@@ -1,15 +1,14 @@
-const { isEmpty, isNull } = require('lodash');
 const db = require('../models');
 const { columnTitleValidate } = require('../validation/boardColumnValidator');
 const errors = require('./errorHandlers');
-const { changeColumnPosition, sortList, removeListElement } = require('../utils');
+const { changeColumnPosition, sortList, removeListElement, objIsEmpty, isNull } = require('../utils');
 const { Op } = require('sequelize');
 
 const createNewColumn = async (title, boardId) => {
   try {
     const error = await columnTitleValidate(title);
 
-    if (!isEmpty(error)) {
+    if (!objIsEmpty(error)) {
       throw new errors.CreateColumnError(error.title)
     }
 
@@ -97,7 +96,7 @@ const updateBoardColumn = async (columnId, title) => {
   try {
     const error = await columnTitleValidate(title);
 
-    if (!isEmpty(error)) {
+    if (!objIsEmpty(error)) {
       throw new errors.UpdateColumnError(error.title)
     }
 

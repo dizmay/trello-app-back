@@ -1,4 +1,4 @@
-const { isEmpty } = require('lodash');
+const { objIsEmpty } = require('../utils')
 const { columnsTasksService } = require('../services');
 const { taskValidate } = require('../validation/columnsTasksValidator');
 const errors = require('../services/errorHandlers');
@@ -7,7 +7,7 @@ const createTask = async (req, res) => {
   const { title, description, columnId } = req.body;
   const error = taskValidate(title, description);
 
-  if(!isEmpty(error)) {
+  if(!objIsEmpty(error)) {
     throw new errors.ValidationError(error.title);
   }
 
@@ -25,7 +25,7 @@ const updateTask = async (req, res) => {
   const { id, title, description } = req.body;
   const error = taskValidate(title, description);
 
-  if(!isEmpty(error)) {
+  if(!objIsEmpty(error)) {
     throw new errors.ValidationError(error.title);
   }
   

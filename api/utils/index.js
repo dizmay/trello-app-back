@@ -1,5 +1,7 @@
 const objIsEmpty = (obj) => obj && Object.keys(obj).length === 0;
 
+const isNull = (item) => item === null;
+
 const changeColumnPosition = (dragId, dropId, columns) => {
 
   let [prevDrag, nextDrag, prevDrop, nextDrop] = [{}, {}, {}, {}];
@@ -177,4 +179,6 @@ module.exports = {
   changeColumnPosition,
   sortList,
   removeListElement,
+  objIsEmpty,
+  isNull,
 }
