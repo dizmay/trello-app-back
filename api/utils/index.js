@@ -2,7 +2,7 @@ const objIsEmpty = (obj) => obj && Object.keys(obj).length === 0;
 
 const isNull = (item) => item === null;
 
-const changeColumnPosition = (dragId, dropId, columns) => {
+const changePosition = (dragId, dropId, columns) => {
 
   let [prevDrag, nextDrag, prevDrop, nextDrop] = [{}, {}, {}, {}];
   const drag = columns.find(column => column.id === dragId);
@@ -17,6 +17,7 @@ const changeColumnPosition = (dragId, dropId, columns) => {
 
   switch (true) {
     case nextDrag.id === drop.id: // From the smallest ID to the larger one if they are close
+      console.log(1);
       if (!objIsEmpty(prevDrag)) {
         prevDrag.nextId = drop.id;
       }
@@ -38,6 +39,7 @@ const changeColumnPosition = (dragId, dropId, columns) => {
       return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
 
     case prevDrag.id === drop.id: // From bigger ID to smaller if they are close
+      console.log(2);
       if (!objIsEmpty(nextDrag)) {
         nextDrag.prevId = drop.id;
       }
@@ -175,10 +177,20 @@ const removeListElement = (elemId, arr) => {
   return [prevElem, nextElem];
 }
 
+const pushElementInList = (elem, list) => {
+  const lastElem = list[list.length - 1];
+  lastElem.nextId = elem.id;
+  elem.prevId = lastElem.id;
+  elem.nextId = null;
+  list.push(elem);
+  return list;
+}
+
 module.exports = {
-  changeColumnPosition,
+  changePosition,
   sortList,
   removeListElement,
   objIsEmpty,
   isNull,
+  pushElementInList,
 }

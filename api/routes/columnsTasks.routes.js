@@ -8,4 +8,6 @@ router.delete('/', columnsTasks.deleteTask);
 
 router.put('/', columnsTasks.updateTask);
 
+router.put('/move-card', columnsTasks.moveCard);
+
 module.exports = router;

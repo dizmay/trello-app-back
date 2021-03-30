@@ -1,9 +1,31 @@
 const db = require('../models');
+const { changePosition, isNull, sortList, removeListElement, pushElementInList } = require('../utils');
+const { Op } = require('sequelize')
 
-const createColumnTask = async (title, description, columnId) => {
+const createColumnTask = async (title, description, columnId, boardId) => {
   try {
-    const newTask = { title, description, columnId };
-    db.columnsTasks.create(newTask);
+    const lastTask = await db.columnsTasks.findOne({
+      where: {
+        [Op.and]: [
+          { nextId: null },
+          { columnId },
+        ]
+      }
+    });
+    const newTask = {
+      title,
+      description,
+      columnId,
+      prevId: isNull(lastTask) ? null : lastTask.id,
+      nextId: null,
+    };
+    const createdCard = await db.columnsTasks.create(newTask);
+
+    if (!isNull(lastTask)) {
+      lastTask.nextId = createdCard.id;
+      await lastTask.save();
+    }
+
     return 'Card successfully created!';
   }
   catch (error) {
@@ -11,8 +33,14 @@ const createColumnTask = async (title, description, columnId) => {
   }
 }
 
-const deleteColumnTask = async (id) => {
+const deleteColumnTask = async (id, columnId) => {
   try {
+    const columnsTasks = await db.columnsTasks.findAll({ where: { columnId } });
+    const tasks = sortList(columnsTasks.map(el => el.dataValues));
+    const removalChanges = removeListElement(id, tasks);
+    Promise.all(removalChanges.map(async change => {
+      await db.columnsTasks.update({ prevId: change.prevId, nextId: change.nextId }, { where: { id: change.id } });
+    }));
     await db.columnsTasks.destroy({ where: { id } });
     return 'Card successfully deleted!';
   }
@@ -34,8 +62,45 @@ const updateColumnTask = async (id, title, description) => {
   }
 }
 
+const moveColumnTask = async (dragId, dropId, dragColumnId, dropColumnId) => {
+  try {
+    const dragColumnTasks = await db.columnsTasks.findAll({ where: { columnId: dragColumnId } });
+    const dragTasks = sortList(dragColumnTasks.map(el => el.dataValues));
+    if (dragColumnId === dropColumnId) {
+      const difference = changePosition(dragId, dropId, dragTasks);
+      const response = await Promise.all(
+        difference.map(async diff => {
+          await db.columnsTasks.update({ prevId: diff.prevId, nextId: diff.nextId }, { where: { id: diff.id } });
+          return diff;
+        })
+      );
+      return response;
+    }
+    const dragElement = await db.columnsTasks.findOne({ where: { id: dragId }, raw: true });
+    const dropColumnTasks = await db.columnsTasks.findAll({ where: { columnId: dropColumnId } });
+    const dropTasks = sortList(dropColumnTasks.map(el => el.dataValues));
+    const dropTasksTemp = pushElementInList(dragElement, dropTasks);
+    const removeDifferences = removeListElement(dragId, dragTasks);
+    const positionDifferences = changePosition(dragId, dropId, dropTasksTemp);
+    const difference = [...new Set(removeDifferences.concat(positionDifferences))];
+    console.log(difference);
+    const response = await Promise.all(
+      difference.map(async diff => {
+        await db.columnsTasks.update({ prevId: diff.prevId, nextId: diff.nextId }, { where: { id: diff.id } });
+        await db.columnsTasks.update({ columnId: dropColumnId }, { where: { id: dragId } });
+        return diff;
+      })
+    );
+    return response;
+  }
+  catch (error) {
+    console.log(error.message);
+  }
+}
+
 module.exports = {
   createColumnTask,
   deleteColumnTask,
   updateColumnTask,
+  moveColumnTask,
 }
