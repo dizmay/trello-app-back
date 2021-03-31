@@ -1,5 +1,5 @@
 const db = require('../models');
-const { changePosition, isNull, sortList, removeListElement, pushElementInList } = require('../utils');
+const { changePosition, isNull, sortList, removeListElement, pushElementInList, changeCardPosition } = require('../utils');
 const { Op } = require('sequelize')
 
 const createColumnTask = async (title, description, columnId, boardId) => {
@@ -62,12 +62,12 @@ const updateColumnTask = async (id, title, description) => {
   }
 }
 
-const moveColumnTask = async (dragId, dropId, dragColumnId, dropColumnId) => {
+const moveColumnTask = async (dragId, dropId, dragColumnId, dropColumnId, side) => {
   try {
     const dragColumnTasks = await db.columnsTasks.findAll({ where: { columnId: dragColumnId } });
     const dragTasks = sortList(dragColumnTasks.map(el => el.dataValues));
     if (dragColumnId === dropColumnId) {
-      const difference = changePosition(dragId, dropId, dragTasks);
+      const difference = changeCardPosition(dragId, dropId, dragTasks, side);
       const response = await Promise.all(
         difference.map(async diff => {
           await db.columnsTasks.update({ prevId: diff.prevId, nextId: diff.nextId }, { where: { id: diff.id } });
@@ -81,9 +81,8 @@ const moveColumnTask = async (dragId, dropId, dragColumnId, dropColumnId) => {
     const dropTasks = sortList(dropColumnTasks.map(el => el.dataValues));
     const dropTasksTemp = pushElementInList(dragElement, dropTasks);
     const removeDifferences = removeListElement(dragId, dragTasks);
-    const positionDifferences = changePosition(dragId, dropId, dropTasksTemp);
+    const positionDifferences = changeCardPosition(dragId, dropId, dropTasksTemp, side);
     const difference = [...new Set(removeDifferences.concat(positionDifferences))];
-    console.log(difference);
     const response = await Promise.all(
       difference.map(async diff => {
         await db.columnsTasks.update({ prevId: diff.prevId, nextId: diff.nextId }, { where: { id: diff.id } });

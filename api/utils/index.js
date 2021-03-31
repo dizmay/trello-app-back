@@ -17,7 +17,6 @@ const changePosition = (dragId, dropId, columns) => {
 
   switch (true) {
     case nextDrag.id === drop.id: // From the smallest ID to the larger one if they are close
-      console.log(1);
       if (!objIsEmpty(prevDrag)) {
         prevDrag.nextId = drop.id;
       }
@@ -39,7 +38,6 @@ const changePosition = (dragId, dropId, columns) => {
       return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
 
     case prevDrag.id === drop.id: // From bigger ID to smaller if they are close
-      console.log(2);
       if (!objIsEmpty(nextDrag)) {
         nextDrag.prevId = drop.id;
       }
@@ -147,6 +145,167 @@ const changePosition = (dragId, dropId, columns) => {
 
 }
 
+const changeCardPosition = (dragId, dropId, columns, side) => {
+  let [prevDrag, nextDrag, prevDrop, nextDrop] = [{}, {}, {}, {}];
+  const drag = columns.find(column => column.id === dragId);
+  const drop = (
+    side === 'empty'
+      ? {}
+      : columns.find(column => column.id === dropId)
+  );
+
+  const getIndex = (el) => columns.indexOf(el);
+
+  columns.forEach(col => {
+    if (col.id === drag.prevId) prevDrag = col;
+    if (col.id === drag.nextId) nextDrag = col;
+    if (col.id === drop.prevId) prevDrop = col;
+    if (col.id === drop.nextId) nextDrop = col;
+  })
+
+  switch (true) {
+
+    case side === 'empty':
+      if (!objIsEmpty(prevDrag)) {
+        prevDrag.nextId = drag.id;
+        drag.prevId = prevDrag.id;
+        drag.nextId = null;
+      }
+      return [prevDrag, drag];
+
+    case getIndex(drop) - getIndex(drag) === 1: // From the smallest ID to the larger one if they are close
+      if (side === 'bottom') {
+        if (!objIsEmpty(prevDrag)) {
+          prevDrag.nextId = drop.id;
+        }
+        if (!objIsEmpty(nextDrop)) {
+          nextDrop.prevId = drag.id;
+        } {
+          const dragTemp = {
+            ...drag
+          };
+          const dropTemp = {
+            ...drop
+          };
+          drag.prevId = dropTemp.id;
+          drag.nextId = dropTemp.nextId;
+          drop.prevId = dragTemp.prevId;
+          drop.nextId = dragTemp.id;
+        }
+      }
+      return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
+
+    case getIndex(drag) - getIndex(drop) === 1: // From bigger ID to smaller if they are close
+      if (side === 'top') {
+        if (!objIsEmpty(nextDrag)) {
+          nextDrag.prevId = drop.id;
+        }
+        if (!objIsEmpty(prevDrop)) {
+          prevDrop.nextId = drag.id;
+        } {
+          const dragTemp = {
+            ...drag
+          };
+          const dropTemp = {
+            ...drop
+          };
+          drag.nextId = dropTemp.id;
+          drag.prevId = dropTemp.prevId;
+          drop.nextId = dragTemp.nextId;
+          drop.prevId = dragTemp.id;
+        }
+      }
+      return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
+
+
+    case Math.abs(getIndex(drag) - getIndex(drop)) === 2: // One element apart and moves from right to left
+      if (side === 'top') {
+        if (!objIsEmpty(prevDrag)) {
+          prevDrag.nextId = drag.nextId;
+        }
+        if (!objIsEmpty(prevDrop)) {
+          prevDrop.nextId = drag.id;
+        }
+        nextDrag.prevId = drag.prevId;
+        nextDrag.nextId = drag.id; {
+          const dragTemp = {
+            ...drag
+          };
+          const dropTemp = {
+            ...drop
+          };
+          drag.prevId = dropTemp.prevId;
+          drag.nextId = dropTemp.id;
+          drop.prevId = dragTemp.id;
+        }
+      } else {
+        if (!objIsEmpty(prevDrag)) {
+          prevDrag.nextId = drag.nextId;
+        }
+        nextDrag.prevId = drag.prevId;
+        if (!objIsEmpty(nextDrop)) {
+          nextDrop.prevId = drag.id;
+        } {
+          const dragTemp = {
+            ...drag
+          };
+          const dropTemp = {
+            ...drop
+          };
+          drag.prevId = dropTemp.id;
+          drag.nextId = dropTemp.nextId;
+          drop.nextId = dragTemp.id;
+        }
+      }
+
+      return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
+
+    case Math.abs(getIndex(drag) - getIndex(drop)) > 2: // Many elements in between (from right side to left)
+      if (side === 'top') {
+        if (!objIsEmpty(nextDrag)) {
+          nextDrag.prevId = drag.prevId;
+        }
+        if (!objIsEmpty(prevDrop)) {
+          prevDrop.nextId = drag.id;
+        }
+        prevDrag.nextId = drag.nextId; {
+          const dragTemp = {
+            ...drag
+          };
+          const dropTemp = {
+            ...drop
+          };
+          drag.prevId = dropTemp.prevId;
+          drag.nextId = dropTemp.id;
+          drop.prevId = dragTemp.id;
+        }
+      } else {
+        if (!objIsEmpty(prevDrag)) {
+          prevDrag.nextId = drag.nextId;
+        }
+        if (!objIsEmpty(nextDrop)) {
+          nextDrop.prevId = drag.id;
+        }
+        nextDrag.prevId = drag.prevId; {
+          const dragTemp = {
+            ...drag
+          };
+          const dropTemp = {
+            ...drop
+          };
+          drag.prevId = dropTemp.id;
+          drag.nextId = dropTemp.nextId;
+          drop.nextId = dragTemp.id;
+        }
+      }
+      return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
+
+    default: // item on himself
+      return [];
+  }
+
+}
+
 const sortList = (columns) => {
   const result = [];
   let [current, next, nextElementId] = [null, null, null];
@@ -178,6 +337,12 @@ const removeListElement = (elemId, arr) => {
 }
 
 const pushElementInList = (elem, list) => {
+  if (list.length === 0) {
+    elem.prevId = null;
+    elem.nextId = null;
+    list.push(elem);
+    return list;
+  }
   const lastElem = list[list.length - 1];
   lastElem.nextId = elem.id;
   elem.prevId = lastElem.id;
@@ -193,4 +358,5 @@ module.exports = {
   objIsEmpty,
   isNull,
   pushElementInList,
+  changeCardPosition,
 }

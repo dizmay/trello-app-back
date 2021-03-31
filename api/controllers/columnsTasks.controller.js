@@ -34,8 +34,8 @@ const updateTask = async (req, res) => {
 }
 
 const moveCard = async (req, res) => {
-  const { dragId, dropId, dragColumnId, dropColumnId, dropNextId } = req.body;
-  const response = await columnsTasksService.moveColumnTask(dragId, dropId, dragColumnId, dropColumnId, dropNextId)
+  const { dragId, dropId, dragColumnId, dropColumnId, side } = req.body;
+  const response = await columnsTasksService.moveColumnTask(dragId, dropId, dragColumnId, dropColumnId, side)
   res.status(200).send(response);
 }
 
