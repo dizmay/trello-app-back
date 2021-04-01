@@ -1,7 +1,7 @@
 const db = require('../models');
 const { columnTitleValidate } = require('../validation/boardColumnValidator');
 const errors = require('./errorHandlers');
-const { changeColumnPosition, sortList, removeListElement, objIsEmpty, isNull } = require('../utils');
+const { changePosition, sortList, removeListElement, objIsEmpty, isNull, renameObjectKey } = require('../utils');
 const { Op } = require('sequelize');
 
 const createNewColumn = async (title, boardId) => {
@@ -56,18 +56,23 @@ const getColumns = async (boardId) => {
         {
           model: db.columnsTasks,
           as: 'tasks',
-          attributes: [[db.sequelize.literal('json_agg(json_build_object(\'id\', tasks.id, \'title\', tasks.title, \'description\', tasks.description))'), 'tasks']],
+          attributes: [[db.sequelize.literal('json_agg(json_build_object(\'id\', tasks.id, \'title\', tasks.title, \'description\', tasks.description, \'prevId\', tasks."prevId", \'nextId\', tasks."nextId"))'), 'tasks']],
         }
       ],
       raw: true,
       group: ['"boardColumns".id'],
-    }).then(res => sortList(res));
+    }).then(res => res.map(el => renameObjectKey(el, 'tasks.tasks', 'tasks')))
+      .then(res => {
+        res.forEach(column => {
+          column.tasks = sortList(column.tasks);
+        })
+        return sortList(res);
+      });
 
     if (!boardColumns) {
       return [];
     }
 
-    await boardColumns.forEach(item => item['tasks.tasks'].sort((a, b) => a.id - b.id));
     return boardColumns;
   }
   catch (error) {
@@ -116,7 +121,7 @@ const changeColumnOrder = async (dragId, dropId, boardId) => {
   try {
     const boardColumns = await db.boardColumns.findAll({ where: { boardId } });
     const columns = sortList(boardColumns.map(el => el.dataValues));
-    const difference = changeColumnPosition(dragId, dropId, columns);
+    const difference = changePosition(dragId, dropId, columns);
     const response = await Promise.all(difference.map(async diff => {
       await db.boardColumns.update({ prevId: diff.prevId, nextId: diff.nextId }, { where: { id: diff.id } });
       return diff;

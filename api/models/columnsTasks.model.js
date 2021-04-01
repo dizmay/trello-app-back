@@ -18,6 +18,12 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    prevId: {
+      type: Sequelize.INTEGER,
+    },
+    nextId: {
+      type: Sequelize.INTEGER,
+    },
   });
 
   ColumnsTasks.associate = models => {
