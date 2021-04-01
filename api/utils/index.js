@@ -166,7 +166,6 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
   switch (true) {
 
     case side === 'empty':
-      console.log(1)
       if (!objIsEmpty(prevDrag)) {
         prevDrag.nextId = drag.id;
         drag.prevId = prevDrag.id;
@@ -176,7 +175,6 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
 
     case getIndex(drop) - getIndex(drag) === 1: // From the smallest ID to the larger one if they are close
       if (side === 'bottom') {
-        console.log(2)
         if (!objIsEmpty(prevDrag)) {
           prevDrag.nextId = drop.id;
         }
@@ -199,7 +197,6 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
 
     case getIndex(drag) - getIndex(drop) === 1: // From bigger ID to smaller if they are close
       if (side === 'top') {
-        console.log(3)
         if (!objIsEmpty(nextDrag)) {
           nextDrag.prevId = drop.id;
         }
@@ -223,7 +220,6 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
 
     case Math.abs(getIndex(drag) - getIndex(drop)) === 2: // One element apart and moves from right to left
       if (side === 'top') {
-        console.log(4)
         if (!objIsEmpty(prevDrop)) {
           prevDrop.nextId = drag.id;
         }
@@ -243,7 +239,6 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
           drop.prevId = dragTemp.id;
         }
       } else {
-        console.log(5)
         if (!objIsEmpty(prevDrag)) {
           prevDrag.nextId = drag.nextId;
         }
@@ -267,7 +262,6 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
 
     case Math.abs(getIndex(drag) - getIndex(drop)) > 2: // Many elements in between (from right side to left)
       if (side === 'top') {
-        console.log(6)
         if (!objIsEmpty(nextDrag)) {
           nextDrag.prevId = drag.prevId;
         }
@@ -286,7 +280,6 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
           drop.prevId = dragTemp.id;
         }
       } else {
-        console.log(7)
         if (!objIsEmpty(prevDrag)) {
           prevDrag.nextId = drag.nextId;
         }
