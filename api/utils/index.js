@@ -356,6 +356,15 @@ const pushElementInList = (elem, list) => {
   return list;
 }
 
+const renameObjectKey = (object, key, newKey) => {
+  const clone = (obj) => Object.assign({}, obj);
+  const clonedObj = clone(object);
+  const targetKey = clonedObj[key];
+  delete clonedObj[key];
+  clonedObj[newKey] = targetKey;
+  return clonedObj;
+};
+
 module.exports = {
   changePosition,
   sortList,
@@ -364,4 +373,5 @@ module.exports = {
   isNull,
   pushElementInList,
   changeCardPosition,
+  renameObjectKey,
 }

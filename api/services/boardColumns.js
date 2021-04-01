@@ -1,7 +1,7 @@
 const db = require('../models');
 const { columnTitleValidate } = require('../validation/boardColumnValidator');
 const errors = require('./errorHandlers');
-const { changePosition, sortList, removeListElement, objIsEmpty, isNull } = require('../utils');
+const { changePosition, sortList, removeListElement, objIsEmpty, isNull, renameObjectKey } = require('../utils');
 const { Op } = require('sequelize');
 
 const createNewColumn = async (title, boardId) => {
@@ -61,12 +61,13 @@ const getColumns = async (boardId) => {
       ],
       raw: true,
       group: ['"boardColumns".id'],
-    }).then(res => {
-      res.forEach(column => {
-        column['tasks.tasks'] = sortList(column['tasks.tasks']);
-      })
-      return sortList(res);
-    });
+    }).then(res => res.map(el => renameObjectKey(el, 'tasks.tasks', 'tasks')))
+      .then(res => {
+        res.forEach(column => {
+          column.tasks = sortList(column.tasks);
+        })
+        return sortList(res);
+      });
 
     if (!boardColumns) {
       return [];
