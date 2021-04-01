@@ -2,6 +2,11 @@ const objIsEmpty = (obj) => obj && Object.keys(obj).length === 0;
 
 const isNull = (item) => item === null;
 
+const validateChanges = (array) => {
+  const removeDuplicates = [...new Set(array)];
+  return removeDuplicates.filter(el => el.hasOwnProperty('id'));
+}
+
 const changePosition = (dragId, dropId, columns) => {
 
   let [prevDrag, nextDrag, prevDrop, nextDrop] = [{}, {}, {}, {}];
@@ -35,7 +40,7 @@ const changePosition = (dragId, dropId, columns) => {
         drop.prevId = dragTemp.prevId;
         drop.nextId = dragTemp.id;
       }
-      return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
+      return validateChanges([prevDrag, nextDrag, prevDrop, nextDrop]);
 
     case prevDrag.id === drop.id: // From bigger ID to smaller if they are close
       if (!objIsEmpty(nextDrag)) {
@@ -56,7 +61,7 @@ const changePosition = (dragId, dropId, columns) => {
         drop.nextId = dragTemp.nextId;
         drop.prevId = dragTemp.id;
       }
-      return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
+      return validateChanges([prevDrag, nextDrag, prevDrop, nextDrop]);
 
 
     case prevDrag.prevId === drop.id: // One element apart and moves from right to left
@@ -78,7 +83,7 @@ const changePosition = (dragId, dropId, columns) => {
         drag.nextId = dropTemp.id;
         drop.prevId = dragTemp.id;
       }
-      return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
+      return validateChanges([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])
 
     case nextDrag.nextId === drop.id: // One element apart and moves from left to right
       if (!objIsEmpty(prevDrag)) {
@@ -99,7 +104,7 @@ const changePosition = (dragId, dropId, columns) => {
         drag.nextId = dropTemp.nextId;
         drop.nextId = dragTemp.id;
       }
-      return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
+      return validateChanges([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])
 
     case drag.id !== drop.id: // Many elements in between
       if (columns.indexOf(drag) < columns.indexOf(drop)) { // from left side to right
@@ -137,7 +142,7 @@ const changePosition = (dragId, dropId, columns) => {
         drag.nextId = dropTemp.id;
         drop.prevId = dragTemp.id;
       }
-      return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
+      return validateChanges([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])
 
     default: // item on himself
       return [];
@@ -171,7 +176,7 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
         drag.prevId = prevDrag.id;
         drag.nextId = null;
       }
-      return [prevDrag, drag];
+      return validateChanges([prevDrag, drag]);
 
     case getIndex(drop) - getIndex(drag) === 1: // From the smallest ID to the larger one if they are close
       if (side === 'bottom') {
@@ -193,7 +198,7 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
           drop.nextId = dragTemp.id;
         }
       }
-      return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
+      return validateChanges([prevDrag, nextDrag, prevDrop, nextDrop]);
 
     case getIndex(drag) - getIndex(drop) === 1: // From bigger ID to smaller if they are close
       if (side === 'top') {
@@ -215,7 +220,7 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
           drop.prevId = dragTemp.id;
         }
       }
-      return [...new Set([prevDrag, nextDrag, prevDrop, nextDrop])];
+      return validateChanges([prevDrag, nextDrag, prevDrop, nextDrop]);
 
 
     case Math.abs(getIndex(drag) - getIndex(drop)) === 2: // One element apart and moves from right to left
@@ -258,7 +263,7 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
         }
       }
 
-      return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
+      return validateChanges([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])
 
     case Math.abs(getIndex(drag) - getIndex(drop)) > 2: // Many elements in between (from right side to left)
       if (side === 'top') {
@@ -298,7 +303,7 @@ const changeCardPosition = (dragId, dropId, columns, side) => {
           drop.nextId = dragTemp.id;
         }
       }
-      return [...new Set([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])]
+      return validateChanges([prevDrag, drag, nextDrag, prevDrop, drop, nextDrop])
 
     default: // item on himself
       return [];
