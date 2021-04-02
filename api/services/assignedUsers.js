@@ -1,5 +1,6 @@
 const db = require('../models');
 const { Op } = require('sequelize');
+const errors = require('./errorHandlers');
 
 const assignUser = async (taskId, userId, boardId) => {
   try {
@@ -8,7 +9,7 @@ const assignUser = async (taskId, userId, boardId) => {
     return response;
   }
   catch (error) {
-    console.log(error.message);
+    throw new errors.AssignmentError(error.message);
   }
 }
 
@@ -26,7 +27,7 @@ const cancelAssignment = async (taskId, userId, boardId) => {
     return 'Assignment was cancelled!';
   }
   catch (error) {
-    console.log(error.message)
+    throw new errors.AssignmentError(error.message);
   }
 }
 
