@@ -11,7 +11,7 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
     },
     description: {
-      type: Sequelize.STRING(20),
+      type: Sequelize.STRING(40),
       allowNull: false,
     },
     columnId: {
