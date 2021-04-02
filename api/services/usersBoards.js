@@ -1,5 +1,6 @@
 const db = require('../models');
 const errors = require('./errorHandlers');
+const { renameObjectKey } = require('../utils');
 
 const getBoardUsers = async (boardId) => {
   try {
@@ -11,10 +12,14 @@ const getBoardUsers = async (boardId) => {
         {
           model: db.users,
           as: 'u',
-          attributes: ['username'],
+          attributes: ['id', 'username'],
         }
       ]
-    }).then(res => res.map(e => e['u.username'])).catch(err => []);
+    }).then(res => res.map(user => {
+      let arr = renameObjectKey(user, 'u.id', 'id');
+      arr = renameObjectKey(arr, 'u.username', 'username');
+      return arr;
+    }));
     return usernames;
   }
   catch (error) {

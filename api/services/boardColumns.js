@@ -49,6 +49,18 @@ const createNewColumn = async (title, boardId) => {
 
 const getColumns = async (boardId) => {
   try {
+    const assignedUsers = await db.assignedUsers.findAll({
+      where: { boardId },
+      attributes: ['taskId'],
+      include: [
+        {
+          model: db.users,
+          as: 'au',
+          attributes: ['username']
+        }
+      ],
+      raw: true
+    }).then(res => res.map(user => renameObjectKey(user, 'au.username', 'username')));
     const boardColumns = await db.boardColumns.findAll({
       where: { boardId },
       attributes: ['id', 'title', 'prevId', 'nextId'],
@@ -65,6 +77,15 @@ const getColumns = async (boardId) => {
       .then(res => {
         res.forEach(column => {
           column.tasks = sortList(column.tasks);
+          column.tasks.forEach(task => {
+            task.assigned = [];
+            assignedUsers.map(user => {
+              if (task.id === user.taskId) {
+                task.assigned.push(user);
+              }
+            })
+            return task
+          })
         })
         return sortList(res);
       });

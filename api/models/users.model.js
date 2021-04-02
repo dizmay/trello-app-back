@@ -29,10 +29,14 @@ module.exports = (sequelize, Sequelize) => {
     Users.hasMany(models.inviteBoard, {
       as: 'resuser',
       foreignKey: 'resUserId',
-    })
+    });
     Users.hasMany(models.inviteBoard, {
       as: 'requser',
       foreignKey: 'reqUserId',
+    });
+    Users.belongsToMany(models.columnsTasks, {
+      through: 'assignedUsers',
+      foreignKey: 'userId',
     })
   };
 

@@ -30,6 +30,10 @@ module.exports = (sequelize, Sequelize) => {
     ColumnsTasks.belongsTo(models.boardColumns, {
       as: 'tasks',
       foreignKey: 'columnId',
+    });
+    ColumnsTasks.belongsToMany(models.users, {
+      through: 'assignedUsers',
+      foreignKey: 'taskId',
     })
   }
 

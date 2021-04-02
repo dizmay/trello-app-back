@@ -26,6 +26,7 @@ db.usersBoards = require('./usersBoards.model.js')(sequelize, Sequelize);
 db.inviteBoard = require('./inviteBoard.model.js')(sequelize, Sequelize);
 db.boardColumns = require('./boardColumns.model.js')(sequelize, Sequelize);
 db.columnsTasks = require('./columnsTasks.model.js')(sequelize, Sequelize);
+db.assignedUsers = require('./assignedUsers.model.js')(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
