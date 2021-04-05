@@ -11,7 +11,7 @@ module.exports = (sequelize, Sequelize) => {
       allowNull: false,
     },
     description: {
-      type: Sequelize.STRING(20),
+      type: Sequelize.STRING(40),
       allowNull: false,
     },
     columnId: {
@@ -30,6 +30,10 @@ module.exports = (sequelize, Sequelize) => {
     ColumnsTasks.belongsTo(models.boardColumns, {
       as: 'tasks',
       foreignKey: 'columnId',
+    });
+    ColumnsTasks.belongsToMany(models.users, {
+      through: 'assignedUsers',
+      foreignKey: 'taskId',
     })
   }
 

@@ -6,15 +6,15 @@ const getBoardUsers = async (boardId) => {
     const usernames = await db.usersBoards.findAll({
       where: { boardId },
       raw: true,
-      attributes: [],
+      attributes: ['u.id', 'u.username'],
       include: [
         {
           model: db.users,
           as: 'u',
-          attributes: ['username'],
+          attributes: [],
         }
       ]
-    }).then(res => res.map(e => e['u.username'])).catch(err => []);
+    })
     return usernames;
   }
   catch (error) {

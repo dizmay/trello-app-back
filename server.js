@@ -4,7 +4,7 @@ const express = require("express");
 require('express-async-errors');
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { auth, boards, usersBoards, inviteBoard, boardColumns, columnsTasks } = require('./api/routes');
+const { auth, boards, usersBoards, inviteBoard, boardColumns, columnsTasks, assignedUsers } = require('./api/routes');
 const { connectToDB } = require('./database');
 const db = require('./api/models');
 
@@ -32,6 +32,7 @@ app.use('/api/users-boards', usersBoards);
 app.use('/api/invite-board', inviteBoard);
 app.use('/api/board-columns', boardColumns);
 app.use('/api/columns-tasks', columnsTasks);
+app.use('/api/assign-user', assignedUsers);
 
 app.use(errorHandlerMiddleware);
 
