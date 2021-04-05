@@ -1,8 +1,8 @@
 const { assignedUsersService } = require('../services');
 
 const assignUserToTask = async (req, res) => {
-  const { taskId, userId, boardId } = req.body;
-  const response = await assignedUsersService.assignUser(taskId, userId, boardId);
+  const { taskId, userId, boardId, columnId } = req.body;
+  const response = await assignedUsersService.assignUser(taskId, userId, boardId, columnId);
   res.status(200).send(response);
 }
 

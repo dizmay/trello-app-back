@@ -2,9 +2,9 @@ const db = require('../models');
 const { Op } = require('sequelize');
 const errors = require('./errorHandlers');
 
-const assignUser = async (taskId, userId, boardId) => {
+const assignUser = async (taskId, userId, boardId, columnId) => {
   try {
-    const assign = { taskId, userId, boardId };
+    const assign = { taskId, userId, boardId, columnId };
     const response = await db.assignedUsers.create(assign);
     return response;
   }

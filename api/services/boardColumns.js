@@ -109,6 +109,7 @@ const deleteBoardColumn = async (columnId, boardId) => {
     Promise.all(removalChanges.map(async change => {
       await db.boardColumns.update({ prevId: change.prevId, nextId: change.nextId }, { where: { id: change.id } });
     }));
+    await db.assignedUsers.destroy({ where: { columnId } });
     await db.columnsTasks.destroy({ where: { columnId } });
     await db.boardColumns.destroy({ where: { id: columnId } });
     return 'Column successfully deleted!'

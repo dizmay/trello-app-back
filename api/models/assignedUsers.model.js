@@ -8,6 +8,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    columnId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
     boardId: {
       type: Sequelize.INTEGER,
       allowNull: false,
