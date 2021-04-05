@@ -1,7 +1,7 @@
 const db = require('../models');
 const { columnTitleValidate } = require('../validation/boardColumnValidator');
 const errors = require('./errorHandlers');
-const { changePosition, sortList, removeListElement, objIsEmpty, isNull, renameObjectKey } = require('../utils');
+const { changePosition, sortList, removeListElement, objIsEmpty, isNull } = require('../utils');
 const { Op } = require('sequelize');
 
 const createNewColumn = async (title, boardId) => {
@@ -51,44 +51,45 @@ const getColumns = async (boardId) => {
   try {
     const assignedUsers = await db.assignedUsers.findAll({
       where: { boardId },
-      attributes: ['taskId'],
+      attributes: ['taskId', 'au.username'],
       include: [
         {
           model: db.users,
           as: 'au',
-          attributes: ['username']
+          attributes: []
         }
       ],
       raw: true
-    }).then(res => res.map(user => renameObjectKey(user, 'au.username', 'username')));
+    });
     const boardColumns = await db.boardColumns.findAll({
       where: { boardId },
-      attributes: ['id', 'title', 'prevId', 'nextId'],
+      attributes: ['id', 'title', 'prevId', 'nextId',
+        [db.sequelize.literal('json_agg(json_build_object(\'id\', tasks.id, \'title\', tasks.title, \'description\', tasks.description, \'prevId\', tasks."prevId", \'nextId\', tasks."nextId"))'), 'tasks']
+      ],
       include: [
         {
           model: db.columnsTasks,
           as: 'tasks',
-          attributes: [[db.sequelize.literal('json_agg(json_build_object(\'id\', tasks.id, \'title\', tasks.title, \'description\', tasks.description, \'prevId\', tasks."prevId", \'nextId\', tasks."nextId"))'), 'tasks']],
+          attributes: [],
         }
       ],
       raw: true,
       group: ['"boardColumns".id'],
-    }).then(res => res.map(el => renameObjectKey(el, 'tasks.tasks', 'tasks')))
-      .then(res => {
-        res.forEach(column => {
-          column.tasks = sortList(column.tasks);
-          column.tasks.forEach(task => {
-            task.assigned = [];
-            assignedUsers.map(user => {
-              if (task.id === user.taskId) {
-                task.assigned.push(user);
-              }
-            })
-            return task
+    }).then(res => {
+      res.forEach(column => {
+        column.tasks = sortList(column.tasks);
+        column.tasks.forEach(task => {
+          task.assigned = [];
+          assignedUsers.map(user => {
+            if (task.id === user.taskId) {
+              task.assigned.push(user);
+            }
           })
+          return task
         })
-        return sortList(res);
-      });
+      })
+      return sortList(res);
+    });
 
     if (!boardColumns) {
       return [];
