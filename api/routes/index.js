@@ -5,6 +5,7 @@ const inviteBoard = require('./inviteBoard.routes');
 const boardColumns = require('./boardColumns.routes');
 const columnsTasks = require('./columnsTasks.routes');
 const assignedUsers = require('./assignedUsers.routes');
+const comments = require('./comments.routes');
 
 module.exports = {
   auth,
@@ -14,4 +15,5 @@ module.exports = {
   boardColumns,
   columnsTasks,
   assignedUsers,
+  comments,
 }

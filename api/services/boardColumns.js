@@ -61,6 +61,18 @@ const getColumns = async (boardId) => {
       ],
       raw: true
     });
+    const comments = await db.comments.findAll({
+      where: { boardId },
+      attributes: ['id', 'text', 'taskId', 'ucs.username'],
+      include: [
+        {
+          model: db.users,
+          as: 'ucs',
+          attributes: []
+        }
+      ],
+      raw: true
+    }).then(res => res.reverse());
     const boardColumns = await db.boardColumns.findAll({
       where: { boardId },
       attributes: ['id', 'title', 'prevId', 'nextId',
@@ -80,6 +92,12 @@ const getColumns = async (boardId) => {
         column.tasks = sortList(column.tasks);
         column.tasks.forEach(task => {
           task.assigned = [];
+          task.comments = [];
+          comments.map(comment => {
+            if (task.id === comment.taskId) {
+              task.comments.push(comment)
+            }
+          })
           assignedUsers.map(user => {
             if (task.id === user.taskId) {
               task.assigned.push(user);
@@ -110,6 +128,7 @@ const deleteBoardColumn = async (columnId, boardId) => {
     Promise.all(removalChanges.map(async change => {
       await db.boardColumns.update({ prevId: change.prevId, nextId: change.nextId }, { where: { id: change.id } });
     }));
+    await db.comments.destroy({ where: { columnId } });
     await db.assignedUsers.destroy({ where: { columnId } });
     await db.columnsTasks.destroy({ where: { columnId } });
     await db.boardColumns.destroy({ where: { id: columnId } });
