@@ -37,7 +37,11 @@ module.exports = (sequelize, Sequelize) => {
     Users.belongsToMany(models.columnsTasks, {
       through: 'assignedUsers',
       foreignKey: 'userId',
-    })
+    });
+    Users.hasMany(models.comments, {
+      as: 'ucs',
+      foreignKey: 'userId',
+    });
   };
 
   return Users;

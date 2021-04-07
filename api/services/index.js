@@ -5,6 +5,7 @@ const inviteBoardService = require('./inviteBoard');
 const boardColumnsService = require('./boardColumns');
 const columnsTasksService = require('./columnsTasks');
 const assignedUsersService = require('./assignedUsers');
+const commentsService = require('./comments');
 
 module.exports = {
   authService,
@@ -14,4 +15,5 @@ module.exports = {
   boardColumnsService,
   columnsTasksService,
   assignedUsersService,
+  commentsService,
 }

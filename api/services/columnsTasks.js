@@ -41,6 +41,7 @@ const deleteColumnTask = async (id, columnId) => {
     Promise.all(removalChanges.map(async change => {
       await db.columnsTasks.update({ prevId: change.prevId, nextId: change.nextId }, { where: { id: change.id } });
     }));
+    await db.comments.destroy({ where: { taskId: id } });
     await db.assignedUsers.destroy({ where: { taskId: id } });
     await db.columnsTasks.destroy({ where: { id } });
     return 'Card successfully deleted!';
